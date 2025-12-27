@@ -11,6 +11,9 @@ declare global {
   }
 }
 
+const calendlyUrl = import.meta.env.VITE_CALENDLY_WIDGET_URL;
+
+
 const HeroSection = () => {
   return (
     <section
@@ -66,7 +69,7 @@ const HeroSection = () => {
                     document.body.style.overflow = 'hidden';
                     document.documentElement.style.overflow = 'hidden';
                     window.Calendly.initPopupWidget({
-                      url: 'https://calendly.com/testcalendlyafrica/coiffure?hide_event_type_details=1&hide_gdpr_banner=1'
+                      url: calendlyUrl,
                     });
                     const observer = new MutationObserver(() => {
                       const popup = document.querySelector('.b1g49gfi');
