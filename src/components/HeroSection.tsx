@@ -2,6 +2,15 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Star, Calendar } from "lucide-react";
 import heroImage from "@/assets/hero-image.jpg";
 
+declare global {
+  interface Calendly {
+    initPopupWidget(options: { url: string; [key: string]: unknown }): void;
+  }
+  interface Window {
+    Calendly: Calendly;
+  }
+}
+
 const HeroSection = () => {
   return (
     <section
@@ -40,12 +49,43 @@ const HeroSection = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <a href="#contact">
-                <Button variant="hero" size="lg">
-                  <Calendar size={20} />
-                  Prendre rendez-vous
-                </Button>
-              </a>
+              <Button
+                variant="hero"
+                size="lg"
+                onClick={() => {
+                  if (window.Calendly) {
+                    const preventScroll = (e: Event) => e.preventDefault();
+                    const preventKey = (e: KeyboardEvent) => {
+                      if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(e.key)) {
+                        e.preventDefault();
+                      }
+                    };
+                    window.addEventListener('wheel', preventScroll, { passive: false });
+                    window.addEventListener('touchmove', preventScroll, { passive: false });
+                    window.addEventListener('keydown', preventKey);
+                    document.body.style.overflow = 'hidden';
+                    document.documentElement.style.overflow = 'hidden';
+                    window.Calendly.initPopupWidget({
+                      url: 'https://calendly.com/testcalendlyafrica/coiffure?hide_event_type_details=1&hide_gdpr_banner=1'
+                    });
+                    const observer = new MutationObserver(() => {
+                      const popup = document.querySelector('.b1g49gfi');
+                      if (!popup) {
+                        window.removeEventListener('wheel', preventScroll);
+                        window.removeEventListener('touchmove', preventScroll);
+                        window.removeEventListener('keydown', preventKey);
+                        document.body.style.overflow = '';
+                        document.documentElement.style.overflow = '';
+                        observer.disconnect();
+                      }
+                    });
+                    observer.observe(document.body, { childList: true, subtree: true });
+                  }
+                }}
+              >
+                <Calendar size={20} />
+                Prendre rendez-vous
+              </Button>
               <a href="#services">
                 <Button variant="heroOutline" size="lg">
                   Découvrir nos services
