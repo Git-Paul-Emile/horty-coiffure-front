@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 import { Menu, X, Phone, Instagram, Facebook } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 const navLinks = [
   { href: "#accueil", label: "Accueil" },
@@ -33,27 +40,61 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between">
           {/* Logo */}
-          <a href="#accueil" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
             <span className="font-display text-2xl font-bold text-primary">
               Horty
             </span>
             <span className="font-display text-2xl font-light text-foreground">
               Coiffure
             </span>
-          </a>
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors duration-300 relative group"
-              >
-                {link.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
-              </a>
-            ))}
+            {navLinks.map((link) => {
+              if (link.label === "Accueil") {
+                return (
+                  <Link
+                    key={link.href}
+                    to="/"
+                    className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors duration-300 relative group"
+                  >
+                    {link.label}
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+                  </Link>
+                );
+              } else if (link.label === "Services") {
+                return (
+                  <DropdownMenu key={link.href}>
+                    <DropdownMenuTrigger asChild>
+                      <button className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors duration-300 relative group">
+                        {link.label}
+                        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem asChild>
+                        <Link to="/coiffure">Coiffures</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/pedicure">Pédicure médicale</Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                );
+              } else {
+                return (
+                  <Link
+                    key={link.href}
+                    to={`/#${link.href.substring(1)}`}
+                    className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors duration-300 relative group"
+                  >
+                    {link.label}
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+                  </Link>
+                );
+              }
+            })}
           </div>
 
           {/* Desktop CTA */}
@@ -100,16 +141,31 @@ const Header = () => {
           }`}
         >
           <div className="bg-card rounded-xl p-6 shadow-elevated space-y-4">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block text-foreground/80 hover:text-primary transition-colors py-2"
-              >
-                {link.label}
-              </a>
-            ))}
+            {navLinks.map((link) => {
+              if (link.label === "Accueil") {
+                return (
+                  <Link
+                    key={link.href}
+                    to="/"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block text-foreground/80 hover:text-primary transition-colors py-2"
+                  >
+                    {link.label}
+                  </Link>
+                );
+              } else {
+                return (
+                  <Link
+                    key={link.href}
+                    to={`/#${link.href.substring(1)}`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block text-foreground/80 hover:text-primary transition-colors py-2"
+                  >
+                    {link.label}
+                  </Link>
+                );
+              }
+            })}
             <div className="pt-4 border-t border-border">
               <a href="tel:+32487126363" className="block">
                 <Button variant="hero" className="w-full">
