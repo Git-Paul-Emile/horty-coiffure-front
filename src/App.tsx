@@ -8,6 +8,7 @@ import Coiffure from "./pages/Coiffure";
 import Pedicure from "./pages/Pedicure";
 import AdminLogin from "./pages/AdminLogin";
 import Dashboard from "./pages/Dashboard";
+import Services from "./pages/Services";
 import NotFound from "./pages/NotFound";
 import ScrollUp from "./components/ScrollUp";
 
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/pedicure" element={<Pedicure />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<Dashboard />} />
+          <Route path="/admin/services" element={<Services />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
