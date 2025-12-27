@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Scissors, Footprints, ArrowRight, Clock, Check } from "lucide-react";
+import { Link } from "react-router-dom";
 import galleryBraids from "@/assets/gallery-braids.jpg";
 import pedicure from "@/assets/pedicure.jpg";
 
@@ -112,15 +113,37 @@ const ServicesSection = () => {
                 </div>
 
                 {/* CTA */}
-                <a href="#contact">
-                  <Button variant="soft" className="w-full group/btn">
-                    Réserver ce service
-                    <ArrowRight
-                      size={16}
-                      className="transition-transform group-hover/btn:translate-x-1"
-                    />
-                  </Button>
-                </a>
+                {service.id === "coiffure" ? (
+                  <Link to="/coiffure">
+                    <Button variant="soft" className="w-full group/btn">
+                      En savoir plus
+                      <ArrowRight
+                        size={16}
+                        className="transition-transform group-hover/btn:translate-x-1"
+                      />
+                    </Button>
+                  </Link>
+                ) : service.id === "pedicure" ? (
+                  <Link to="/pedicure">
+                    <Button variant="soft" className="w-full group/btn">
+                      En savoir plus
+                      <ArrowRight
+                        size={16}
+                        className="transition-transform group-hover/btn:translate-x-1"
+                      />
+                    </Button>
+                  </Link>
+                ) : (
+                  <a href="#contact">
+                    <Button variant="soft" className="w-full group/btn">
+                      Réserver ce service
+                      <ArrowRight
+                        size={16}
+                        className="transition-transform group-hover/btn:translate-x-1"
+                      />
+                    </Button>
+                  </a>
+                )}
               </CardContent>
             </Card>
           ))}
