@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import { Gift, Percent, Heart, Crown } from "lucide-react";
 
 const benefits = [
@@ -25,6 +27,32 @@ const benefits = [
 ];
 
 const LoyaltySection = () => {
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+  const [count, setCount] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap() + 1);
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap() + 1);
+    });
+  }, [api]);
+
+  useEffect(() => {
+    if (!api || !isPlaying) return;
+    const interval = setInterval(() => {
+      api.scrollNext();
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [api, isPlaying]);
+
   return (
     <section id="fidelite" className="py-24 bg-background relative overflow-hidden">
       {/* Background Decoration */}
@@ -48,27 +76,83 @@ const LoyaltySection = () => {
           </p>
         </div>
 
-        {/* Benefits Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-          {benefits.map((benefit, index) => (
-            <Card
-              key={index}
-              variant="interactive"
-              className={`text-center animate-fade-in-up animation-delay-${(index + 1) * 100}`}
-            >
-              <CardContent className="p-8">
-                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6 transition-transform duration-300 group-hover:scale-110">
-                  <benefit.icon size={32} className="text-primary" />
-                </div>
-                <h3 className="font-display text-xl font-bold text-foreground mb-3">
-                  {benefit.title}
-                </h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  {benefit.description}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
+        {/* Benefits Carousel for small screens */}
+        <div
+          className="sm:hidden"
+          onMouseEnter={() => setIsPlaying(false)}
+          onMouseLeave={() => setIsPlaying(true)}
+        >
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            setApi={setApi}
+            className="max-w-6xl mx-auto"
+          >
+            <CarouselContent>
+              {benefits.map((benefit, index) => (
+                <CarouselItem key={index}>
+                  <Card
+                    variant="interactive"
+                    className={`text-center animate-fade-in-up animation-delay-${(index + 1) * 100}`}
+                  >
+                    <CardContent className="p-8">
+                      <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6 transition-transform duration-300 group-hover:scale-110">
+                        <benefit.icon size={32} className="text-primary" />
+                      </div>
+                      <h3 className="font-display text-xl font-bold text-foreground mb-3">
+                        {benefit.title}
+                      </h3>
+                      <p className="text-muted-foreground text-sm leading-relaxed">
+                        {benefit.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            {count > 1 && <CarouselPrevious className="hidden md:flex" />}
+            {count > 1 && <CarouselNext className="hidden md:flex" />}
+          </Carousel>
+          {/* Dots Indicator */}
+          {count > 1 && (
+            <div className="flex justify-center mt-6">
+              {Array.from({ length: count }, (_, i) => (
+                <button
+                  key={i}
+                  className={`w-3 h-3 rounded-full mx-1 transition-colors ${i + 1 === current ? 'bg-primary' : 'bg-muted-foreground/30'}`}
+                  onClick={() => api?.scrollTo(i)}
+                  aria-label={`Aller à la slide ${i + 1}`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Benefits Grid for small+ screens */}
+        <div className="hidden sm:block">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {benefits.map((benefit, index) => (
+              <Card
+                key={index}
+                variant="interactive"
+                className={`text-center animate-fade-in-up animation-delay-${(index + 1) * 100}`}
+              >
+                <CardContent className="p-8">
+                  <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6 transition-transform duration-300 group-hover:scale-110">
+                    <benefit.icon size={32} className="text-primary" />
+                  </div>
+                  <h3 className="font-display text-xl font-bold text-foreground mb-3">
+                    {benefit.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    {benefit.description}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
 
         {/* How it Works */}
