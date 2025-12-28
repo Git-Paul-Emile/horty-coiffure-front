@@ -1,8 +1,21 @@
+import { useState } from "react";
 import Header from "@/components/Header";
+import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Clock, Check } from "lucide-react";
+import { ArrowRight, Clock, Check, Calendar } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useAppointments } from '@/hooks/useAppointments';
+
+declare global {
+  interface Calendly {
+    initPopupWidget(options: { url: string; [key: string]: unknown }): void;
+  }
+  interface Window {
+    Calendly: Calendly;
+  }
+}
 import pedicure from "@/assets/pedicure.jpg";
 
 const pedicureServices = [
@@ -52,9 +65,40 @@ const pedicureServices = [
 ];
 
 const Pedicure = () => {
+  const { settings } = useAppointments();
+  const [tooltipOpen, setTooltipOpen] = useState(true);
+
   return (
     <main className="overflow-x-hidden">
       <Header />
+
+      {/* Floating Appointment Button */}
+      <TooltipProvider>
+        <Tooltip open={tooltipOpen}>
+          <TooltipTrigger asChild>
+            <Button
+              className="fixed bottom-20 right-8 z-50 p-3 rounded-full shadow-lg bg-primary hover:bg-primary/90 transition-all duration-300 animate-vibrate hover:animate-none"
+              size="icon"
+              onMouseEnter={() => setTooltipOpen(false)}
+              onMouseLeave={() => setTooltipOpen(true)}
+              onClick={() => {
+                if (window.Calendly) {
+                  window.Calendly.initPopupWidget({
+                    url: settings.calendlyUrl,
+                  });
+                }
+              }}
+              aria-label="Prendre rendez-vous"
+            >
+              <Calendar size={20} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Prendre rendez-vous</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
       <section className="py-24 bg-muted/30">
         <div className="container mx-auto px-4">
           {/* Section Header */}
@@ -118,23 +162,13 @@ const Pedicure = () => {
                       {service.price}
                     </span>
                   </div>
-
-                  {/* CTA */}
-                  <a href="#contact">
-                    <Button variant="soft" className="w-full group/btn">
-                      Réserver ce soin
-                      <ArrowRight
-                        size={16}
-                        className="transition-transform group-hover/btn:translate-x-1"
-                      />
-                    </Button>
-                  </a>
                 </CardContent>
               </Card>
             ))}
           </div>
         </div>
       </section>
+      <ContactSection />
       <Footer />
     </main>
   );

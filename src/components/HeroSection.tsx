@@ -61,32 +61,9 @@ const HeroSection = () => {
                   size="lg"
                   onClick={() => {
                     if (window.Calendly) {
-                      const preventScroll = (e: Event) => e.preventDefault();
-                      const preventKey = (e: KeyboardEvent) => {
-                        if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(e.key)) {
-                          e.preventDefault();
-                        }
-                      };
-                      window.addEventListener('wheel', preventScroll, { passive: false });
-                      window.addEventListener('touchmove', preventScroll, { passive: false });
-                      window.addEventListener('keydown', preventKey);
-                      document.body.style.overflow = 'hidden';
-                      document.documentElement.style.overflow = 'hidden';
                       window.Calendly.initPopupWidget({
                         url: settings.calendlyUrl,
                       });
-                      const observer = new MutationObserver(() => {
-                        const popup = document.querySelector('.b1g49gfi');
-                        if (!popup) {
-                          window.removeEventListener('wheel', preventScroll);
-                          window.removeEventListener('touchmove', preventScroll);
-                          window.removeEventListener('keydown', preventKey);
-                          document.body.style.overflow = '';
-                          document.documentElement.style.overflow = '';
-                          observer.disconnect();
-                        }
-                      });
-                      observer.observe(document.body, { childList: true, subtree: true });
                     }
                   }}
                 >

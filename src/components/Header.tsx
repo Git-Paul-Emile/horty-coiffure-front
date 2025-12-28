@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Menu, X, Phone, Instagram, Facebook } from "lucide-react";
+import { Menu, X, Phone, Instagram, Facebook, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import {
@@ -21,6 +21,7 @@ const navLinks = [
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -68,8 +69,9 @@ const Header = () => {
                 return (
                   <DropdownMenu key={link.href}>
                     <DropdownMenuTrigger asChild>
-                      <button className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors duration-300 relative group">
+                      <button className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors duration-300 relative group flex items-center gap-1">
                         {link.label}
+                        <ChevronDown size={14} />
                         <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
                       </button>
                     </DropdownMenuTrigger>
@@ -164,6 +166,36 @@ const Header = () => {
                   >
                     {link.label}
                   </Link>
+                );
+              } else if (link.label === "Services") {
+                return (
+                  <div key={link.href} className="space-y-2">
+                    <button
+                      onClick={() => setIsServicesOpen(!isServicesOpen)}
+                      className="flex items-center gap-2 text-foreground/80 hover:text-primary transition-colors py-2 w-full justify-between"
+                    >
+                      {link.label}
+                      <ChevronDown size={14} className={`transition-transform duration-200 ${isServicesOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    {isServicesOpen && (
+                      <div className="space-y-2 pl-4">
+                        <Link
+                          to="/coiffure"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block text-foreground/80 hover:text-primary transition-colors py-2"
+                        >
+                          Coiffures
+                        </Link>
+                        <Link
+                          to="/pedicure"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block text-foreground/80 hover:text-primary transition-colors py-2"
+                        >
+                          Pédicure et Manucure
+                        </Link>
+                      </div>
+                    )}
+                  </div>
                 );
               } else if (link.label === "Produits") {
                 return (
