@@ -14,36 +14,41 @@ import {
   Facebook,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useAdminSettings } from "@/hooks/useAdminSettings";
 
-const contactInfo = [
-  {
-    icon: MapPin,
-    label: "Adresse",
-    value: "Leuvensestraat 55, 3300 Tienen",
-    href: "https://maps.google.com/?q=Leuvensestraat+55,+3300+Tienen,+Belgium",
-  },
-  {
-    icon: Phone,
-    label: "Téléphone",
-    value: "+32 487 12 63 63",
-    href: "tel:+32487126363",
-  },
-  {
-    icon: Mail,
-    label: "Email",
-    value: "info@hortycoiffure.be",
-    href: "mailto:info@hortycoiffure.be",
-  },
-];
-
-const hours = [
-  { day: "Lundi", hours: "Fermé" },
-  { day: "Mardi - Vendredi", hours: "9h00 - 18h00" },
-  { day: "Samedi", hours: "9h00 - 17h00" },
-  { day: "Dimanche", hours: "Fermé" },
-];
+interface DisplayHour {
+  day: string;
+  hours: string;
+}
 
 const ContactSection = () => {
+  const { settings } = useAdminSettings();
+
+  const contactInfo = [
+    {
+      icon: MapPin,
+      label: "Adresse",
+      value: settings.contactInfo?.address || "Adresse non disponible",
+      href: `https://maps.google.com/?q=${encodeURIComponent(settings.contactInfo?.address || "")}`,
+    },
+    {
+      icon: Phone,
+      label: "Téléphone",
+      value: settings.contactInfo?.phone || "Téléphone non disponible",
+      href: `tel:${(settings.contactInfo?.phone || "").replace(/\s/g, '')}`,
+    },
+    {
+      icon: Mail,
+      label: "Email",
+      value: settings.contactInfo?.email || "Email non disponible",
+      href: `mailto:${settings.contactInfo?.email || ""}`,
+    },
+  ];
+
+  const hours: DisplayHour[] = (settings.openingHours || []).map(hour => ({
+    day: hour.day,
+    hours: hour.isClosed ? "Fermé" : `${(hour.openingTime || "00:00").slice(0, 5)} - ${(hour.closingTime || "00:00").slice(0, 5)}`,
+  }));
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -176,14 +181,14 @@ const ContactSection = () => {
                   Ou contactez-nous directement :
                 </p>
                 <div className="flex flex-wrap gap-3">
-                  <a href="tel:+32487126363">
+                  <a href={`tel:${(settings.contactInfo?.phone || "").replace(/\s/g, '')}`}>
                     <Button variant="soft" size="sm">
                       <Phone size={16} />
                       Appeler
                     </Button>
                   </a>
                   <a
-                    href="https://wa.me/32487126363"
+                    href={`https://wa.me/${(settings.contactInfo?.phone || "").replace(/\s/g, '').replace('+', '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

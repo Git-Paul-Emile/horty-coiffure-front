@@ -121,9 +121,16 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
             <SidebarGroupLabel>Configuration</SidebarGroupLabel>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton className="hover:bg-primary/10 hover:text-primary">
-                  <Settings className="h-4 w-4" />
-                  Paramètres
+                <SidebarMenuButton
+                  asChild
+                  className={`hover:bg-primary/10 hover:text-primary ${
+                    isActive("/admin/settings") ? "bg-primary/10 text-primary" : ""
+                  }`}
+                >
+                  <Link to="/admin/settings">
+                    <Settings className="h-4 w-4" />
+                    Paramètres
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

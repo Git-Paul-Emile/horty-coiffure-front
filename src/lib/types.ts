@@ -49,3 +49,27 @@ export interface AppointmentSettings {
   urgencyMode: boolean;
   urgencyMessage: string;
 }
+
+export interface OpeningHour {
+  day: string;
+  isClosed: boolean;
+  openingTime: string;
+  closingTime: string;
+}
+
+export interface ContactInfo {
+  address: string;
+  phone: string;
+  email: string;
+}
+
+export interface AdminCredentials {
+  email: string;
+  password: string;
+}
+
+export interface AdminSettings {
+  openingHours: OpeningHour[];
+  contactInfo: ContactInfo;
+  adminCredentials: AdminCredentials;
+}

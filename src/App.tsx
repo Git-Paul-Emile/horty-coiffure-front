@@ -9,6 +9,7 @@ import Pedicure from "./pages/Pedicure";
 import PublicProducts from "@/pages/PublicProducts";
 import AdminLogin from "./pages/AdminLogin";
 import Dashboard from "./pages/Dashboard";
+import Settings from "./pages/Settings";
 import Services from "./pages/Services";
 import Products from "./pages/Products";
 import Partners from "./pages/Partners";
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/pedicure" element={<Pedicure />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<Dashboard />} />
+          <Route path="/admin/settings" element={<Settings />} />
           <Route path="/admin/services" element={<Services />} />
           <Route path="/admin/products" element={<Products />} />
           <Route path="/admin/partners" element={<Partners />} />
