@@ -5,8 +5,9 @@ import galleryBraids from "@/assets/gallery-braids.jpg";
 import galleryTwists from "@/assets/gallery-twists.jpg";
 import galleryExtensions from "@/assets/gallery-extensions.jpg";
 import heroImage from "@/assets/hero-image.jpg";
+import pedicure from "@/assets/pedicure.jpg";
 
-const categories = ["Toutes", "Nattes", "Tresses", "Twists", "Extensions"];
+const categories = ["Toutes", "Nattes", "Tresses", "Twists", "Extensions", "Pédicure"];
 
 const galleryImages = [
   {
@@ -28,6 +29,11 @@ const galleryImages = [
     src: heroImage,
     alt: "Coiffure sophistiquée",
     category: "Tresses",
+  },
+  {
+    src: pedicure,
+    alt: "Pédicure et manucure professionnelle",
+    category: "Pédicure",
   },
 ];
 

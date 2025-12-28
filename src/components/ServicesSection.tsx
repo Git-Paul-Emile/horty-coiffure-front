@@ -11,17 +11,15 @@ const services = [
     icon: Scissors,
     title: "Coiffure Africaine et Européenne",
     description:
-      "Nattes, tresses, twists, extensions, coupes, brushings, balayages, colorations. Experte en coiffures de mariage et pose de faux cils.",
+      "Spécialiste en nattes, tresses, twists, extensions et colorations. Experte en coiffures de mariage.",
     image: galleryBraids,
     features: [
-      "Nattes simples et collées",
-      "Tresses de toutes tailles",
+      "Nattes et tresses",
       "Twists naturels",
-      "Extensions avec ou sans mèches",
+      "Extensions capillaires",
       "Coupes et brushings",
-      "Balayages et colorations",
+      "Colorations et balayages",
       "Coiffures de mariage",
-      "Pose de faux cils",
     ]
   },
   {
@@ -29,14 +27,14 @@ const services = [
     icon: Hand,
     title: "Pédicure et Manucure",
     description:
-      "Pédicure médicale complète avec traitement des durillons, cors, œils-de-perdrix, ongles incarnés, mycose. Pédicure simple et manucure avec pose de vernis semi-permanent.",
+      "Pédicure médicale complète et manucure professionnelle avec soins spécialisés.",
     image: pedicure,
     features: [
-      "Traitement complet des durillons, cors, œils-de-perdrix",
-      "Soins des ongles incarnés et mycose",
-      "Pédicure simple avec soin classique",
-      "Manucure et pose de vernis semi-permanent",
-      "Massage relaxant des pieds",
+      "Traitement des durillons et cors",
+      "Soins des ongles incarnés",
+      "Pédicure simple",
+      "Manucure et vernis semi-permanent",
+      "Massage relaxant",
     ]
   },
 ];

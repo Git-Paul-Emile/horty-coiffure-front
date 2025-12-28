@@ -110,7 +110,7 @@ const Footer = () => {
               © {currentYear} Horty Coiffure. Tous droits réservés.
             </p>
             <p className="text-background/50 text-sm flex items-center gap-1">
-              Fait avec <Heart size={14} className="text-primary fill-primary" /> à Tirlemont
+              Fait par Paul Emile
             </p>
           </div>
         </div>

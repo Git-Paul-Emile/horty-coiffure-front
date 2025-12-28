@@ -132,7 +132,7 @@ const Header = () => {
             <a href="tel:+32487126363">
               <Button variant="hero" size="default">
                 <Phone size={16} />
-                Prendre RDV
+                Appeler
               </Button>
             </a>
           </div>
