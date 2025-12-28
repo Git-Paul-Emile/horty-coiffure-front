@@ -150,8 +150,8 @@ const Header = () => {
 
         {/* Mobile Menu */}
         <div
-          className={`lg:hidden overflow-hidden transition-all duration-500 ${
-            isMobileMenuOpen ? "max-h-96 opacity-100 mt-4" : "max-h-0 opacity-0"
+          className={`lg:hidden overflow-y-auto overflow-hidden transition-all duration-500 ${
+            isMobileMenuOpen ? `max-h-[${isServicesOpen ? '500px' : '384px'}] opacity-100 mt-4` : "max-h-0 opacity-0"
           }`}
         >
           <div className="bg-card rounded-xl p-6 shadow-elevated space-y-4">
@@ -225,7 +225,7 @@ const Header = () => {
               <a href="tel:+32487126363" className="block">
                 <Button variant="hero" className="w-full">
                   <Phone size={16} />
-                  Prendre RDV
+                  Appeler
                 </Button>
               </a>
             </div>
