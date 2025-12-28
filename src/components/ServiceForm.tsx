@@ -24,6 +24,7 @@ const ServiceForm = ({ service, open, onClose, onSave }: ServiceFormProps) => {
     included: '',
     excluded: '',
     status: 'active' as 'active' | 'inactive',
+    image: '',
   });
 
   useEffect(() => {
@@ -37,6 +38,7 @@ const ServiceForm = ({ service, open, onClose, onSave }: ServiceFormProps) => {
         included: service.included,
         excluded: service.excluded,
         status: service.status,
+        image: service.image || '',
       });
     } else {
       setFormData({
@@ -48,6 +50,7 @@ const ServiceForm = ({ service, open, onClose, onSave }: ServiceFormProps) => {
         included: '',
         excluded: '',
         status: 'active',
+        image: '',
       });
     }
   }, [service, open]);
@@ -71,32 +74,14 @@ const ServiceForm = ({ service, open, onClose, onSave }: ServiceFormProps) => {
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="name">Nom du service</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => handleChange('name', e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="category">Catégorie</Label>
-              <Select value={formData.category} onValueChange={(value) => handleChange('category', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Sélectionner une catégorie" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="coiffure-africaine">Coiffure africaine</SelectItem>
-                  <SelectItem value="extensions">Extensions</SelectItem>
-                  <SelectItem value="tresses">Tresses</SelectItem>
-                  <SelectItem value="coupe-classique">Coupe classique</SelectItem>
-                  <SelectItem value="couleur">Couleur</SelectItem>
-                  <SelectItem value="autre">Autre</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div>
+            <Label htmlFor="name">Nom du service</Label>
+            <Input
+              id="name"
+              value={formData.name}
+              onChange={(e) => handleChange('name', e.target.value)}
+              required
+            />
           </div>
 
           <div>
@@ -166,6 +151,16 @@ const ServiceForm = ({ service, open, onClose, onSave }: ServiceFormProps) => {
                 <SelectItem value="inactive">Désactivé</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div>
+            <Label htmlFor="image">Image (URL)</Label>
+            <Input
+              id="image"
+              value={formData.image}
+              onChange={(e) => handleChange('image', e.target.value)}
+              placeholder="Ex: /gallery-braids.jpg"
+            />
           </div>
 
           <DialogFooter>

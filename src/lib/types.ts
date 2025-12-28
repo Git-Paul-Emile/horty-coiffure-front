@@ -8,4 +8,11 @@ export interface Service {
   included: string;
   excluded: string;
   status: 'active' | 'inactive';
+  image?: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  description?: string;
 }

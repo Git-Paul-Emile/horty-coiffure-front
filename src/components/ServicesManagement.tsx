@@ -3,6 +3,7 @@ import { Service } from '@/lib/types';
 import ServicesList from './ServicesList';
 import ServiceForm from './ServiceForm';
 import { useServices } from '@/hooks/useServices';
+import { useToast } from '@/hooks/use-toast';
 
 interface ServicesManagementProps {
   initialAction?: 'add' | null;
@@ -12,6 +13,7 @@ const ServicesManagement = ({ initialAction }: ServicesManagementProps) => {
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const { addService, updateService } = useServices();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (initialAction === 'add') {
@@ -30,13 +32,29 @@ const ServicesManagement = ({ initialAction }: ServicesManagementProps) => {
   };
 
   const handleSave = (serviceData: Omit<Service, 'id'>) => {
-    if (editingService) {
-      updateService(editingService.id, serviceData);
-    } else {
-      addService(serviceData);
+    try {
+      if (editingService) {
+        updateService(editingService.id, serviceData);
+        toast({
+          title: "Service modifié",
+          description: "Le service a été modifié avec succès.",
+        });
+      } else {
+        addService(serviceData);
+        toast({
+          title: "Service ajouté",
+          description: "Le nouveau service a été ajouté avec succès.",
+        });
+      }
+      setIsFormOpen(false);
+      setEditingService(null);
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur s'est produite lors de la sauvegarde.",
+        variant: "destructive",
+      });
     }
-    setIsFormOpen(false);
-    setEditingService(null);
   };
 
   const handleClose = () => {
@@ -44,9 +62,26 @@ const ServicesManagement = ({ initialAction }: ServicesManagementProps) => {
     setEditingService(null);
   };
 
+  const handleDelete = (serviceId: string, serviceName: string) => {
+    try {
+      // deleteService est appelé dans ServicesList, mais on peut ajouter le toast ici
+      toast({
+        title: "Service supprimé",
+        description: `Le service "${serviceName}" a été supprimé avec succès.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur s'est produite lors de la suppression.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div>
-      <ServicesList onEdit={handleEdit} onAdd={handleAdd} />
+      <h1 className="text-3xl font-bold mb-6">Gestion des Services</h1>
+      <ServicesList onEdit={handleEdit} onAdd={handleAdd} onDelete={handleDelete} />
       <ServiceForm
         service={editingService}
         open={isFormOpen}
