@@ -1,10 +1,39 @@
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star, Quote } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Star, Quote, Plus } from "lucide-react";
 import { useTestimonials } from "@/hooks/useTestimonials";
+import { useServices } from "@/hooks/useServices";
+import StarRating from "./StarRating";
 
 const TestimonialsSection = () => {
-  const { testimonials } = useTestimonials();
+  const { testimonials, addTestimonial } = useTestimonials();
+  const { services } = useServices();
   const approvedTestimonials = testimonials.filter(t => t.status === 'approved');
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    text: '',
+    rating: 5,
+    service: '',
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    addTestimonial({ ...formData, status: 'pending' });
+    setFormData({ name: '', text: '', rating: 5, service: '' });
+    setIsDialogOpen(false);
+  };
+
+  const handleChange = (field: string, value: string | number) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
   return (
     <section className="py-24 bg-muted/30 overflow-hidden">
@@ -72,6 +101,79 @@ const TestimonialsSection = () => {
             </Card>
           ))}
         </div>
+
+        {/* Add Testimonial Button */}
+        <div className="text-center mt-12">
+          <Button onClick={() => setIsDialogOpen(true)} className="bg-primary hover:bg-primary/90">
+            <Plus className="w-4 h-4 mr-2" />
+            Ajouter un témoignage
+          </Button>
+        </div>
+
+        {/* Add Testimonial Dialog */}
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle>Ajouter un témoignage</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="name">Votre nom</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => handleChange('name', e.target.value)}
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="text">Votre témoignage</Label>
+                <Textarea
+                  id="text"
+                  value={formData.text}
+                  onChange={(e) => handleChange('text', e.target.value)}
+                  rows={4}
+                  required
+                />
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <Label>Note</Label>
+                  <StarRating
+                    rating={formData.rating}
+                    onRatingChange={(rating) => handleChange('rating', rating)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="service">Service reçu</Label>
+                  <Select value={formData.service} onValueChange={(value) => handleChange('service', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez un service" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {services.map((service) => (
+                        <SelectItem key={service.id} value={service.name}>
+                          {service.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  Annuler
+                </Button>
+                <Button type="submit">
+                  Soumettre
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     </section>
   );

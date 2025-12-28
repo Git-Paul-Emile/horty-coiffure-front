@@ -41,7 +41,7 @@ const ProductsSection = () => {
             Découvrez nos catégories
           </h2>
           <p className="text-lg text-muted-foreground">
-            Explorez notre sélection de produits de qualité pour prendre soin de vos cheveux et de votre peau.
+            Découvrez notre gamme de produits Babor® et de produits naturels à base d'extraits végétaux pour prendre soin de vos cheveux et de votre peau.
           </p>
         </div>
 

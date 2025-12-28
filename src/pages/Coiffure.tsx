@@ -64,6 +64,62 @@ const coiffureTypes = [
     duration: "2h à 4h",
     price: "À partir de 60€",
   },
+  {
+    id: "coupes",
+    title: "Coupes et Brushings",
+    description: "Coupes modernes et brushings professionnels pour un style impeccable.",
+    image: galleryBraids, // Réutiliser
+    features: [
+      "Coupes adaptées à votre forme de visage",
+      "Brushings lissants ou volumisants",
+      "Utilisation de produits de qualité",
+      "Conseils personnalisés",
+    ],
+    duration: "45 min à 1h30",
+    price: "À partir de 30€",
+  },
+  {
+    id: "colorations",
+    title: "Balayages et Colorations",
+    description: "Techniques de coloration expertes pour sublimer votre couleur naturelle.",
+    image: galleryBraids, // Réutiliser
+    features: [
+      "Balayages subtils ou audacieux",
+      "Colorations complètes",
+      "Produits respectueux des cheveux",
+      "Entretien et conseils",
+    ],
+    duration: "2h à 3h",
+    price: "À partir de 50€",
+  },
+  {
+    id: "mariage",
+    title: "Coiffures de Mariage",
+    description: "Coiffures élégantes et sophistiquées pour votre jour spécial.",
+    image: galleryBraids, // Réutiliser
+    features: [
+      "Styles classiques ou modernes",
+      "Utilisation d'accessoires",
+      "Tenue longue durée",
+      "Essai préalable possible",
+    ],
+    duration: "1h à 2h",
+    price: "À partir de 60€",
+  },
+  {
+    id: "faux-cils",
+    title: "Pose de Faux Cils",
+    description: "Pose professionnelle de faux cils pour un regard intense.",
+    image: galleryBraids, // Réutiliser
+    features: [
+      "Faux cils naturels ou dramatiques",
+      "Application sans douleur",
+      "Durée de vie prolongée",
+      "Retouches possibles",
+    ],
+    duration: "30 min à 45 min",
+    price: "À partir de 25€",
+  },
 ];
 
 const Coiffure = () => {
@@ -81,7 +137,7 @@ const Coiffure = () => {
               Découvrez Nos Types de Coiffure
             </h1>
             <p className="text-lg text-muted-foreground">
-              Explorez notre gamme complète de services de coiffure africaine, chacun réalisé avec expertise et passion.
+              Explorez notre gamme complète de services de coiffure africaine et européenne, chacun réalisé avec expertise et passion.
             </p>
           </div>
 

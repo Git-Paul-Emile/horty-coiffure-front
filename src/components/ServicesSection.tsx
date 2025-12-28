@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Scissors, Footprints, ArrowRight, Clock, Check } from "lucide-react";
+import { Scissors, Hand, ArrowRight, Check } from "lucide-react";
 import { Link } from "react-router-dom";
 import galleryBraids from "@/assets/gallery-braids.jpg";
 import pedicure from "@/assets/pedicure.jpg";
@@ -9,34 +9,35 @@ const services = [
   {
     id: "coiffure",
     icon: Scissors,
-    title: "Coiffure Africaine",
+    title: "Coiffure Africaine et Européenne",
     description:
-      "Nattes, tresses, twists et extensions réalisés avec expertise et passion par une professionnelle expérimentée.",
+      "Nattes, tresses, twists, extensions, coupes, brushings, balayages, colorations. Experte en coiffures de mariage et pose de faux cils.",
     image: galleryBraids,
     features: [
       "Nattes simples et collées",
       "Tresses de toutes tailles",
       "Twists naturels",
       "Extensions avec ou sans mèches",
-    ],
-    duration: "1h30 à 4h selon la coiffure",
-    price: "À partir de 40€",
+      "Coupes et brushings",
+      "Balayages et colorations",
+      "Coiffures de mariage",
+      "Pose de faux cils",
+    ]
   },
   {
     id: "pedicure",
-    icon: Footprints,
-    title: "Pédicure Médicale",
+    icon: Hand,
+    title: "Pédicure et Manucure",
     description:
-      "Soins professionnels pour le bien-être de vos pieds, réalisés dans un cadre hygiénique et accueillant.",
+      "Pédicure médicale complète avec traitement des durillons, cors, œils-de-perdrix, ongles incarnés, mycose. Pédicure simple et manucure avec pose de vernis semi-permanent.",
     image: pedicure,
     features: [
-      "Traitement des cors et durillons",
-      "Soins des ongles incarnés",
-      "Hydratation profonde",
-      "Conseils personnalisés",
-    ],
-    duration: "45 min à 1h",
-    price: "À partir de 35€",
+      "Traitement complet des durillons, cors, œils-de-perdrix",
+      "Soins des ongles incarnés et mycose",
+      "Pédicure simple avec soin classique",
+      "Manucure et pose de vernis semi-permanent",
+      "Massage relaxant des pieds",
+    ]
   },
 ];
 
@@ -104,11 +105,10 @@ const ServicesSection = () => {
                 {/* Duration & Price */}
                 <div className="flex items-center justify-between pt-4 border-t border-border">
                   <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                    <Clock size={16} />
-                    {service.duration}
+                    
                   </div>
                   <span className="font-display text-xl font-bold text-primary">
-                    {service.price}
+                    
                   </span>
                 </div>
 

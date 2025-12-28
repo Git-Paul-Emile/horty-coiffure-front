@@ -4,13 +4,13 @@ import { Gift, Percent, Heart, Crown } from "lucide-react";
 const benefits = [
   {
     icon: Gift,
-    title: "Carte Gratuite",
+    title: "Carte de Fidélité",
     description: "Recevez votre carte de fidélité gratuitement dès votre première visite.",
   },
   {
     icon: Percent,
-    title: "-10% Offerts",
-    description: "Après 5 prestations coiffure, bénéficiez de 10% de réduction sur la suivante.",
+    title: "Réduction de 5€",
+    description: "À la 10e coiffure, bénéficiez d'une réduction de 5 euros sur votre prestation.",
   },
   {
     icon: Heart,
@@ -84,7 +84,7 @@ const LoyaltySection = () => {
                     {[
                       "Demandez votre carte lors de votre prochaine visite",
                       "Cumulez un tampon par prestation coiffure",
-                      "Au 5ème tampon, profitez de -10% sur votre prochaine coiffure",
+                      "À la 10e coiffure, profitez d'une réduction de 5€ sur votre prestation",
                     ].map((step, i) => (
                       <li key={i} className="flex items-start gap-4">
                         <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm">
@@ -106,16 +106,16 @@ const LoyaltySection = () => {
                         Horty Coiffure
                       </p>
                     </div>
-                    <div className="mt-6 flex justify-center gap-2">
-                      {[1, 2, 3, 4, 5].map((i) => (
+                    <div className="mt-6 flex justify-center gap-2 flex-wrap">
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
                         <div
                           key={i}
-                          className={`w-10 h-10 rounded-full border-2 border-primary-foreground/50 flex items-center justify-center ${
-                            i <= 3 ? "bg-primary-foreground/20" : ""
+                          className={`w-8 h-8 rounded-full border-2 border-primary-foreground/50 flex items-center justify-center ${
+                            i <= 9 ? "bg-primary-foreground/20" : ""
                           }`}
                         >
-                          {i <= 3 && (
-                            <Gift size={16} className="text-primary-foreground" />
+                          {i <= 9 && (
+                            <Gift size={12} className="text-primary-foreground" />
                           )}
                         </div>
                       ))}

@@ -78,7 +78,7 @@ const Header = () => {
                         <Link to="/coiffure">Coiffures</Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to="/pedicure">Pédicure médicale</Link>
+                        <Link to="/pedicure">Pédicure et Manucure</Link>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

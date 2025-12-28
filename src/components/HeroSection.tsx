@@ -44,9 +44,9 @@ const HeroSection = () => {
 
             {/* Subheadline */}
             <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-              Vous cherchez une coiffure africaine réalisée par une professionnelle 
+              Vous cherchez une coiffure africaine ou européenne réalisée par une professionnelle 
               expérimentée ? Découvrez notre savoir-faire unique en nattes, tresses, 
-              twists et extensions.
+              twists, extensions et autres techniques de coiffure.
             </p>
 
             {/* CTA Buttons */}

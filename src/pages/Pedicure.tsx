@@ -7,60 +7,47 @@ import pedicure from "@/assets/pedicure.jpg";
 
 const pedicureServices = [
   {
-    id: "cors-durillons",
-    title: "Traitement des Cors et Durillons",
-    description: "Élimination douce et professionnelle des cors et durillons pour des pieds sains et confortables.",
+    id: "pedicure-medicale",
+    title: "Pédicure Médicale",
+    description: "Traitement complet des durillons, cors, œils-de-perdrix, ongles incarnés, mycose. Chaque soin est conclu par un massage relaxant des pieds.",
     image: pedicure,
     features: [
-      "Exfoliation en profondeur",
-      "Application de crèmes apaisantes",
-      "Prévention des récidives",
-      "Conseils d'entretien à domicile",
+      "Traitement des durillons et cors",
+      "Soins des œils-de-perdrix et mycose",
+      "Traitement des ongles incarnés",
+      "Massage relaxant des pieds",
+      "Conseils personnalisés",
+    ],
+    duration: "45 min à 1h",
+    price: "À partir de 35€",
+  },
+  {
+    id: "pedicure-simple",
+    title: "Pédicure Simple",
+    description: "Soin classique avec soin des pieds et pose de vernis semi-permanent.",
+    image: pedicure,
+    features: [
+      "Soin classique des pieds",
+      "Pose de vernis semi-permanent",
+      "Hydratation légère",
+      "Finition impeccable",
     ],
     duration: "30 min à 45 min",
     price: "À partir de 25€",
   },
   {
-    id: "ongles-incarnes",
-    title: "Soins des Ongles Incarnés",
-    description: "Traitement spécialisé pour les ongles incarnés avec des techniques douces et efficaces.",
+    id: "manucure",
+    title: "Manucure",
+    description: "Pose de vernis semi-permanent sur vos ongles pour un look soigné.",
     image: pedicure,
     features: [
-      "Désincarcération sans douleur",
-      "Application d'antiseptiques",
-      "Bandage protecteur",
-      "Suivi post-traitement",
-    ],
-    duration: "45 min à 1h",
-    price: "À partir de 40€",
-  },
-  {
-    id: "hydratation",
-    title: "Hydratation Profonde",
-    description: "Soins intensifs d'hydratation pour nourrir et revitaliser la peau de vos pieds.",
-    image: pedicure,
-    features: [
-      "Masque hydratant nourrissant",
-      "Massage relaxant",
-      "Protection longue durée",
-      "Résultats visibles dès la première séance",
+      "Préparation des ongles",
+      "Pose de vernis semi-permanent",
+      "Soin des cuticules",
+      "Durée longue tenue",
     ],
     duration: "30 min à 45 min",
-    price: "À partir de 30€",
-  },
-  {
-    id: "conseils",
-    title: "Conseils Personnalisés",
-    description: "Accompagnement personnalisé pour le bien-être quotidien de vos pieds.",
-    image: pedicure,
-    features: [
-      "Évaluation de votre situation",
-      "Recommandations adaptées",
-      "Prévention des problèmes",
-      "Suivi régulier conseillé",
-    ],
-    duration: "15 min à 30 min",
-    price: "Inclus dans les soins",
+    price: "À partir de 20€",
   },
 ];
 
@@ -76,10 +63,10 @@ const Pedicure = () => {
               Nos Services de Pédicure
             </span>
             <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
-              Découvrez Nos Soins de Pédicure Médicale
+              Découvrez Nos Soins de Pédicure et Manucure
             </h1>
             <p className="text-lg text-muted-foreground">
-              Explorez notre gamme complète de soins de pédicure médicale, réalisée dans un cadre hygiénique et professionnel.
+              Explorez notre gamme complète de soins de pédicure et manucure, réalisée dans un cadre hygiénique et professionnel.
             </p>
           </div>
 

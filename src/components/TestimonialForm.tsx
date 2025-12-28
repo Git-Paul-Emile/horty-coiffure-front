@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { useServices } from '@/hooks/useServices';
+import StarRating from './StarRating';
 
 interface TestimonialFormProps {
   testimonial?: Testimonial | null;
@@ -15,6 +17,7 @@ interface TestimonialFormProps {
 }
 
 const TestimonialForm = ({ testimonial, open, onClose, onSave }: TestimonialFormProps) => {
+  const { services } = useServices();
   const [formData, setFormData] = useState({
     name: '',
     text: '',
@@ -83,28 +86,28 @@ const TestimonialForm = ({ testimonial, open, onClose, onSave }: TestimonialForm
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-4">
             <div>
-              <Label htmlFor="rating">Note (1-5)</Label>
-              <Input
-                id="rating"
-                type="number"
-                min="1"
-                max="5"
-                value={formData.rating}
-                onChange={(e) => handleChange('rating', parseInt(e.target.value) || 5)}
-                required
+              <Label>Note</Label>
+              <StarRating
+                rating={formData.rating}
+                onRatingChange={(rating) => handleChange('rating', rating)}
               />
             </div>
             <div>
               <Label htmlFor="service">Service</Label>
-              <Input
-                id="service"
-                value={formData.service}
-                onChange={(e) => handleChange('service', e.target.value)}
-                placeholder="Ex: Nattes collées"
-                required
-              />
+              <Select value={formData.service} onValueChange={(value) => handleChange('service', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionnez un service" />
+                </SelectTrigger>
+                <SelectContent>
+                  {services.map((service) => (
+                    <SelectItem key={service.id} value={service.name}>
+                      {service.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

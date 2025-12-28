@@ -28,8 +28,8 @@ const ContactSection = () => {
     {
       icon: MapPin,
       label: "Adresse",
-      value: settings.contactInfo?.address || "Adresse non disponible",
-      href: `https://maps.google.com/?q=${encodeURIComponent(settings.contactInfo?.address || "")}`,
+      value: `${settings.contactInfo?.address || "Adresse non disponible"}.`,
+      href: `https://maps.app.goo.gl/n1j9nN4Yj4hAnxHb8`,
     },
     {
       icon: Phone,
@@ -264,6 +264,9 @@ const ContactSection = () => {
               </CardContent>
             </Card>
 
+
+            
+
             {/* Social Media */}
             <Card variant="glass">
               <CardContent className="p-6">
@@ -306,7 +309,7 @@ const ContactSection = () => {
             {/* Map */}
             <Card variant="elevated" className="overflow-hidden">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2512.8635899611!2d4.932!3d50.805!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c160d0d0d0d0d0%3A0x0!2sLeuvensestraat%2055%2C%203300%20Tienen!5e0!3m2!1sen!2sbe!4v1234567890"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2512.8635899611!2d4.932!3d50.805!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c160d0d0d0d0d0%3A0x0!2sRue%20de%20Tirlemont%2C%203300%20Tirlemont!5e0!3m2!1sen!2sbe!4v1234567890"
                 width="100%"
                 height="250"
                 style={{ border: 0 }}
