@@ -2,17 +2,45 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Package } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import { useProducts } from "@/hooks/useProducts";
+import { useEffect, useState } from "react";
 
 const ProductsSection = () => {
   const { products } = useProducts();
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+  const [count, setCount] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
 
   // Filtrer seulement les produits actifs
   const activeProducts = products.filter(product => product.status === 'active');
 
   // Obtenir les catégories uniques
   const categories = Array.from(new Set(activeProducts.map(product => product.category || 'Autres')));
+
+  // Autoplay functionality
+  useEffect(() => {
+    if (!api || !isPlaying) return;
+
+    const interval = setInterval(() => {
+      api.scrollNext();
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [api, isPlaying]);
+
+  // Update current slide and count
+  useEffect(() => {
+    if (!api) return;
+
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap() + 1);
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap() + 1);
+    });
+  }, [api]);
 
   if (categories.length === 0) {
     return null; // Ne pas afficher la section si aucune catégorie
@@ -46,18 +74,23 @@ const ProductsSection = () => {
         </div>
 
         {/* Categories Carousel */}
-        <div className="max-w-5xl mx-auto">
+        <div
+          className="max-w-5xl mx-auto"
+          onMouseEnter={() => setIsPlaying(false)}
+          onMouseLeave={() => setIsPlaying(true)}
+        >
           <Carousel
             opts={{
               align: "start",
               loop: true,
             }}
+            setApi={setApi}
             className="w-full"
           >
             <CarouselContent className="-ml-2 md:-ml-4">
               {categories.map((category, index) => (
                 <CarouselItem key={category} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
-                  <Card className="overflow-hidden group animate-fade-in-up animation-delay-100">
+                  <Card className="overflow-hidden group animate-fade-in-up animation-delay-100 hover:shadow-lg transition-shadow duration-300">
                     <div className="relative h-48 overflow-hidden bg-muted">
                       <img
                         src={getCategoryImage(category)}
@@ -74,7 +107,7 @@ const ProductsSection = () => {
                       <div className="absolute inset-0 bg-gradient-to-t from-card/80 via-transparent to-transparent" />
                       <div className="absolute bottom-4 left-4 right-4">
                         <div className="flex items-center justify-between text-foreground">
-                          <span className="text-sm font-medium">
+                          <span className="text-sm font-medium bg-black/20 px-2 py-1 rounded">
                             {getCategoryCount(category)} produit{getCategoryCount(category) > 1 ? 's' : ''}
                           </span>
                         </div>
@@ -88,7 +121,7 @@ const ProductsSection = () => {
                         Découvrez notre sélection de produits {category.toLowerCase()} de qualité.
                       </p>
                       <Link to="/produits">
-                        <Button variant="soft" className="w-full group/btn">
+                        <Button variant="soft" className="w-full group/btn hover:bg-primary hover:text-primary-foreground transition-colors">
                           Voir les produits
                           <ArrowRight
                             size={16}
@@ -104,6 +137,17 @@ const ProductsSection = () => {
             <CarouselPrevious className="hidden md:flex" />
             <CarouselNext className="hidden md:flex" />
           </Carousel>
+          {/* Dots Indicator */}
+          <div className="flex justify-center mt-6">
+            {Array.from({ length: count }, (_, i) => (
+              <button
+                key={i}
+                className={`w-3 h-3 rounded-full mx-1 transition-colors ${i + 1 === current ? 'bg-primary' : 'bg-muted-foreground/30'}`}
+                onClick={() => api?.scrollTo(i)}
+                aria-label={`Aller à la slide ${i + 1}`}
+              />
+            ))}
+          </div>
         </div>
 
         {/* Call to Action */}
