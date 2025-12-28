@@ -2,9 +2,38 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink } from "lucide-react";
 import { usePartners } from "@/hooks/usePartners";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
+import { useEffect, useState } from "react";
 
 const PartnersSection = () => {
   const { partners } = usePartners();
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+  const [count, setCount] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+
+  // Autoplay functionality
+  useEffect(() => {
+    if (!api || !isPlaying) return;
+
+    const interval = setInterval(() => {
+      api.scrollNext();
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [api, isPlaying]);
+
+  // Update current slide and count
+  useEffect(() => {
+    if (!api) return;
+
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap() + 1);
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap() + 1);
+    });
+  }, [api]);
 
   if (partners.length === 0) {
     return null;
@@ -27,62 +56,93 @@ const PartnersSection = () => {
           </p>
         </div>
 
-        {/* Partners Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {partners.map((partner, index) => (
-            <Card
-              key={partner.id}
-              variant="elevated"
-              className={`overflow-hidden group animate-fade-in-up animation-delay-${(index + 1) * 100}`}
-            >
-              <CardContent className="p-6 text-center">
-                <div className="space-y-4">
-                  {/* Logo */}
-                  <div className="w-20 h-20 mx-auto bg-muted rounded-full flex items-center justify-center overflow-hidden">
-                    {partner.logo ? (
-                      <img
-                        src={partner.logo}
-                        alt={`Logo ${partner.name}`}
-                        className="w-full h-full object-contain"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                          e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                        }}
-                      />
-                    ) : null}
-                    <div className={`w-full h-full flex items-center justify-center text-muted-foreground text-sm ${partner.logo ? 'hidden' : ''}`}>
-                      Logo
-                    </div>
-                  </div>
+        {/* Partners Carousel */}
+        <div
+          className="max-w-5xl mx-auto"
+          onMouseEnter={() => setIsPlaying(false)}
+          onMouseLeave={() => setIsPlaying(true)}
+        >
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            setApi={setApi}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-2 md:-ml-4">
+              {partners.map((partner, index) => (
+                <CarouselItem key={partner.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
+                  <Card
+                    variant="elevated"
+                    className="overflow-hidden group animate-fade-in-up animation-delay-100 hover:shadow-lg transition-shadow duration-300"
+                  >
+                    <CardContent className="p-6 text-center">
+                      <div className="space-y-4">
+                        {/* Logo */}
+                        <div className="w-20 h-20 mx-auto bg-muted rounded-full flex items-center justify-center overflow-hidden">
+                          {partner.logo ? (
+                            <img
+                              src={partner.logo}
+                              alt={`Logo ${partner.name}`}
+                              className="w-full h-full object-contain"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                                e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                              }}
+                            />
+                          ) : null}
+                          <div className={`w-full h-full flex items-center justify-center text-muted-foreground text-sm ${partner.logo ? 'hidden' : ''}`}>
+                            Logo
+                          </div>
+                        </div>
 
-                  {/* Name */}
-                  <h3 className="font-display text-xl font-bold text-foreground">
-                    {partner.name}
-                  </h3>
+                        {/* Name */}
+                        <h3 className="font-display text-xl font-bold text-foreground">
+                          {partner.name}
+                        </h3>
 
-                  {/* Description */}
-                  {partner.description && (
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      {partner.description}
-                    </p>
-                  )}
+                        {/* Description */}
+                        {partner.description && (
+                          <p className="text-muted-foreground text-sm leading-relaxed">
+                            {partner.description}
+                          </p>
+                        )}
 
-                  {/* Website Link */}
-                  {partner.website && partner.website !== '#' && (
-                    <a
-                      href={partner.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors text-sm font-medium"
-                    >
-                      Visiter le site
-                      <ExternalLink size={14} />
-                    </a>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                        {/* Website Link */}
+                        {partner.website && partner.website !== '#' && (
+                          <a
+                            href={partner.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors text-sm font-medium"
+                          >
+                            Visiter le site
+                            <ExternalLink size={14} />
+                          </a>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            {count > 1 && <CarouselPrevious className="hidden md:flex" />}
+            {count > 1 && <CarouselNext className="hidden md:flex" />}
+          </Carousel>
+          {/* Dots Indicator */}
+          {count > 1 && (
+            <div className="flex justify-center mt-6">
+              {Array.from({ length: count }, (_, i) => (
+                <button
+                  key={i}
+                  className={`w-3 h-3 rounded-full mx-1 transition-colors ${i + 1 === current ? 'bg-primary' : 'bg-muted-foreground/30'}`}
+                  onClick={() => api?.scrollTo(i)}
+                  aria-label={`Aller à la slide ${i + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Call to Action */}

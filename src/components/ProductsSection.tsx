@@ -134,20 +134,22 @@ const ProductsSection = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="hidden md:flex" />
-            <CarouselNext className="hidden md:flex" />
+            {count > 1 && <CarouselPrevious className="hidden md:flex" />}
+            {count > 1 && <CarouselNext className="hidden md:flex" />}
           </Carousel>
           {/* Dots Indicator */}
-          <div className="flex justify-center mt-6">
-            {Array.from({ length: count }, (_, i) => (
-              <button
-                key={i}
-                className={`w-3 h-3 rounded-full mx-1 transition-colors ${i + 1 === current ? 'bg-primary' : 'bg-muted-foreground/30'}`}
-                onClick={() => api?.scrollTo(i)}
-                aria-label={`Aller à la slide ${i + 1}`}
-              />
-            ))}
-          </div>
+          {count > 1 && (
+            <div className="flex justify-center mt-6">
+              {Array.from({ length: count }, (_, i) => (
+                <button
+                  key={i}
+                  className={`w-3 h-3 rounded-full mx-1 transition-colors ${i + 1 === current ? 'bg-primary' : 'bg-muted-foreground/30'}`}
+                  onClick={() => api?.scrollTo(i)}
+                  aria-label={`Aller à la slide ${i + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Call to Action */}
