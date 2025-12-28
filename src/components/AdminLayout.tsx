@@ -71,9 +71,16 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton className="hover:bg-primary/10 hover:text-primary">
-                  <Calendar className="h-4 w-4" />
-                  Rendez-vous
+                <SidebarMenuButton
+                  asChild
+                  className={`hover:bg-primary/10 hover:text-primary ${
+                    isActive("/admin/appointments") ? "bg-primary/10 text-primary" : ""
+                  }`}
+                >
+                  <Link to="/admin/appointments">
+                    <Calendar className="h-4 w-4" />
+                    Rendez-vous
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>

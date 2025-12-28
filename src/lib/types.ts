@@ -24,3 +24,9 @@ export interface Realization {
   caption: string;
   title?: string;
 }
+
+export interface AppointmentSettings {
+  calendlyUrl: string;
+  urgencyMode: boolean;
+  urgencyMessage: string;
+}

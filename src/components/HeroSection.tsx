@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Star, Calendar } from "lucide-react";
 import heroImage from "@/assets/hero-image.jpg";
+import { useAppointments } from '@/hooks/useAppointments';
 
 declare global {
   interface Calendly {
@@ -11,10 +12,8 @@ declare global {
   }
 }
 
-const calendlyUrl = import.meta.env.VITE_CALENDLY_WIDGET_URL;
-
-
 const HeroSection = () => {
+  const { settings } = useAppointments();
   return (
     <section
       id="accueil"
@@ -52,43 +51,49 @@ const HeroSection = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button
-                variant="hero"
-                size="lg"
-                onClick={() => {
-                  if (window.Calendly) {
-                    const preventScroll = (e: Event) => e.preventDefault();
-                    const preventKey = (e: KeyboardEvent) => {
-                      if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(e.key)) {
-                        e.preventDefault();
-                      }
-                    };
-                    window.addEventListener('wheel', preventScroll, { passive: false });
-                    window.addEventListener('touchmove', preventScroll, { passive: false });
-                    window.addEventListener('keydown', preventKey);
-                    document.body.style.overflow = 'hidden';
-                    document.documentElement.style.overflow = 'hidden';
-                    window.Calendly.initPopupWidget({
-                      url: calendlyUrl,
-                    });
-                    const observer = new MutationObserver(() => {
-                      const popup = document.querySelector('.b1g49gfi');
-                      if (!popup) {
-                        window.removeEventListener('wheel', preventScroll);
-                        window.removeEventListener('touchmove', preventScroll);
-                        window.removeEventListener('keydown', preventKey);
-                        document.body.style.overflow = '';
-                        document.documentElement.style.overflow = '';
-                        observer.disconnect();
-                      }
-                    });
-                    observer.observe(document.body, { childList: true, subtree: true });
-                  }
-                }}
-              >
-                <Calendar size={20} />
-                Prendre rendez-vous
-              </Button>
+              {settings.urgencyMode ? (
+                <div className="p-4 rounded-lg bg-muted text-center">
+                  <p className="text-muted-foreground font-medium">{settings.urgencyMessage}</p>
+                </div>
+              ) : (
+                <Button
+                  variant="hero"
+                  size="lg"
+                  onClick={() => {
+                    if (window.Calendly) {
+                      const preventScroll = (e: Event) => e.preventDefault();
+                      const preventKey = (e: KeyboardEvent) => {
+                        if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(e.key)) {
+                          e.preventDefault();
+                        }
+                      };
+                      window.addEventListener('wheel', preventScroll, { passive: false });
+                      window.addEventListener('touchmove', preventScroll, { passive: false });
+                      window.addEventListener('keydown', preventKey);
+                      document.body.style.overflow = 'hidden';
+                      document.documentElement.style.overflow = 'hidden';
+                      window.Calendly.initPopupWidget({
+                        url: settings.calendlyUrl,
+                      });
+                      const observer = new MutationObserver(() => {
+                        const popup = document.querySelector('.b1g49gfi');
+                        if (!popup) {
+                          window.removeEventListener('wheel', preventScroll);
+                          window.removeEventListener('touchmove', preventScroll);
+                          window.removeEventListener('keydown', preventKey);
+                          document.body.style.overflow = '';
+                          document.documentElement.style.overflow = '';
+                          observer.disconnect();
+                        }
+                      });
+                      observer.observe(document.body, { childList: true, subtree: true });
+                    }
+                  }}
+                >
+                  <Calendar size={20} />
+                  Prendre rendez-vous
+                </Button>
+              )}
               <a href="#services">
                 <Button variant="heroOutline" size="lg">
                   Découvrir nos services
