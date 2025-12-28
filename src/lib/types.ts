@@ -16,3 +16,11 @@ export interface Category {
   name: string;
   description?: string;
 }
+
+export interface Realization {
+  id: string;
+  image: string;
+  serviceId: string; // Link to service
+  caption: string;
+  title?: string;
+}

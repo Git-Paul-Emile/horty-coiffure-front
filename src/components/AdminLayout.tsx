@@ -1,7 +1,7 @@
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger, SidebarGroup, SidebarGroupLabel } from "@/components/ui/sidebar";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogOut, Home, Scissors, Calendar, Users, Settings } from "lucide-react";
+import { LogOut, Home, Scissors, Calendar, Users, Settings, Image } from "lucide-react";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -54,6 +54,19 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                   <Link to="/admin/services">
                     <Scissors className="h-4 w-4" />
                     Services
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  className={`hover:bg-primary/10 hover:text-primary ${
+                    isActive("/admin/realizations") ? "bg-primary/10 text-primary" : ""
+                  }`}
+                >
+                  <Link to="/admin/realizations">
+                    <Image className="h-4 w-4" />
+                    Réalisations
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
