@@ -50,6 +50,7 @@ const Footer = () => {
               {[
                 { href: "#accueil", label: "Accueil" },
                 { href: "#services", label: "Services" },
+                { href: "/produits", label: "Produits" },
                 { href: "#realisations", label: "Réalisations" },
                 { href: "#fidelite", label: "Fidélité" },
                 { href: "#contact", label: "Contact" },

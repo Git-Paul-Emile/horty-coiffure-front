@@ -25,6 +25,25 @@ export interface Realization {
   title?: string;
 }
 
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image?: string;
+  brand?: string;
+  category?: string;
+  status: 'active' | 'inactive';
+}
+
+export interface Partner {
+  id: string;
+  name: string;
+  logo?: string;
+  description?: string;
+  website?: string;
+}
+
 export interface AppointmentSettings {
   calendlyUrl: string;
   urgencyMode: boolean;
