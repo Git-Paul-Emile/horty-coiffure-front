@@ -1,28 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, Quote } from "lucide-react";
-
-const testimonials = [
-  {
-    name: "Aminata S.",
-    text: "Un savoir-faire exceptionnel ! Mes nattes tiennent parfaitement et le résultat est magnifique. Je recommande vivement Horty Coiffure.",
-    rating: 5,
-    service: "Nattes collées",
-  },
-  {
-    name: "Marie L.",
-    text: "La pédicure médicale m'a vraiment soulagée. Professionnalisme et douceur, je reviens tous les mois avec confiance.",
-    rating: 5,
-    service: "Pédicure médicale",
-  },
-  {
-    name: "Sophie K.",
-    text: "30 ans d'expérience, ça se ressent ! Les twists sont parfaits et durent longtemps. Merci pour votre patience et votre expertise.",
-    rating: 5,
-    service: "Twists",
-  },
-];
+import { useTestimonials } from "@/hooks/useTestimonials";
 
 const TestimonialsSection = () => {
+  const { testimonials } = useTestimonials();
+  const approvedTestimonials = testimonials.filter(t => t.status === 'approved');
+
   return (
     <section className="py-24 bg-muted/30 overflow-hidden">
       <div className="container mx-auto px-4">
@@ -41,7 +24,7 @@ const TestimonialsSection = () => {
 
         {/* Testimonials Grid */}
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {testimonials.map((testimonial, index) => (
+          {approvedTestimonials.map((testimonial, index) => (
             <Card
               key={index}
               variant="glass"

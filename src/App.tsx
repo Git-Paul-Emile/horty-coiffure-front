@@ -15,6 +15,7 @@ import Products from "./pages/Products";
 import Partners from "./pages/Partners";
 import Realizations from "./pages/Realizations";
 import Appointments from "./pages/Appointments";
+import Testimonials from "./pages/Testimonials";
 import NotFound from "./pages/NotFound";
 import ScrollUp from "./components/ScrollUp";
 
@@ -39,6 +40,7 @@ const App = () => (
           <Route path="/admin/partners" element={<Partners />} />
           <Route path="/admin/realizations" element={<Realizations />} />
           <Route path="/admin/appointments" element={<Appointments />} />
+          <Route path="/admin/testimonials" element={<Testimonials />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -44,6 +44,15 @@ export interface Partner {
   website?: string;
 }
 
+export interface Testimonial {
+  id: string;
+  name: string;
+  text: string;
+  rating: number;
+  service: string;
+  status: 'pending' | 'approved' | 'rejected';
+}
+
 export interface AppointmentSettings {
   calendlyUrl: string;
   urgencyMode: boolean;

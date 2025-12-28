@@ -126,6 +126,12 @@ const Dashboard = () => {
                   Ajouter un service
                 </Link>
               </Button>
+              <Button asChild className="w-full justify-start" variant="outline">
+                <Link to="/admin/testimonials?action=add">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Ajouter un témoignage
+                </Link>
+              </Button>
               <Button className="w-full justify-start" variant="outline">
                 <Newspaper className="mr-2 h-4 w-4" />
                 Publier une news

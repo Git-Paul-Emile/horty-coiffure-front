@@ -1,7 +1,7 @@
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger, SidebarGroup, SidebarGroupLabel } from "@/components/ui/sidebar";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogOut, Home, Scissors, Calendar, Users, Settings, Image, Package, Handshake } from "lucide-react";
+import { LogOut, Home, Scissors, Calendar, Users, Settings, Image, Package, MessageSquare } from "lucide-react";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -74,19 +74,6 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                 <SidebarMenuButton
                   asChild
                   className={`hover:bg-primary/10 hover:text-primary ${
-                    isActive("/admin/partners") ? "bg-primary/10 text-primary" : ""
-                  }`}
-                >
-                  <Link to="/admin/partners">
-                    <Handshake className="h-4 w-4" />
-                    Partenaires
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  className={`hover:bg-primary/10 hover:text-primary ${
                     isActive("/admin/realizations") ? "bg-primary/10 text-primary" : ""
                   }`}
                 >
@@ -110,9 +97,16 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton className="hover:bg-primary/10 hover:text-primary">
-                  <Users className="h-4 w-4" />
-                  Clients
+                <SidebarMenuButton
+                  asChild
+                  className={`hover:bg-primary/10 hover:text-primary ${
+                    isActive("/admin/testimonials") ? "bg-primary/10 text-primary" : ""
+                  }`}
+                >
+                  <Link to="/admin/testimonials">
+                    <MessageSquare className="h-4 w-4" />
+                    Témoignages
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
