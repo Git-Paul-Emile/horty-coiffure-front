@@ -2,19 +2,23 @@ export interface Service {
   id: string;
   name: string;
   description: string;
-  category: string;
+  category: string; // subcategory id
   duration: number; // in minutes
   price: number;
   included: string;
   excluded: string;
   status: 'active' | 'inactive';
   image?: string;
+  variants: string[];
 }
 
 export interface Category {
   id: string;
   name: string;
   description?: string;
+  parentId?: string;
+  status: 'active' | 'inactive';
+  image?: string;
 }
 
 export interface Realization {

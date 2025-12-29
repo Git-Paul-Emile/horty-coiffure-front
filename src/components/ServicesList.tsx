@@ -5,21 +5,29 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Edit, Trash2, Plus, Search } from 'lucide-react';
+import { Edit, Trash2, Plus, Search, Power } from 'lucide-react';
 import { useServices } from '@/hooks/useServices';
+import { useConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 
 interface ServicesListProps {
   onEdit: (service: Service) => void;
   onAdd: () => void;
   onDelete?: (serviceId: string, serviceName: string) => void;
+  onToggle?: (serviceId: string) => void;
+  entitySingular?: string;
+  entityPlural?: string;
+  entityDefiniteArticle?: string; // 'le'|'la'
+  entityIndefiniteArticle?: string; // 'un'|'une'
 }
 
-const ServicesList = ({ onEdit, onAdd, onDelete }: ServicesListProps) => {
+const ServicesList = ({ onEdit, onAdd, onDelete, onToggle, entitySingular = 'prestation', entityPlural = 'Prestations', entityDefiniteArticle = 'la', entityIndefiniteArticle = 'une' }: ServicesListProps) => {
   const { services, deleteService } = useServices();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const { confirmDelete, ConfirmDeleteDialog } = useConfirmDeleteDialog({
+    title: 'Confirmer la suppression',
+    description: `Êtes-vous sûr de vouloir supprimer ${entityDefiniteArticle} ${entitySingular}`,
+  });
 
   // Filtrer les services selon la recherche et le statut
   const filteredServices = services.filter(service => {
@@ -29,11 +37,6 @@ const ServicesList = ({ onEdit, onAdd, onDelete }: ServicesListProps) => {
     return matchesSearch && matchesStatus;
   });
 
-  // Grouper les services filtrés par section
-  const coiffureServices = filteredServices.filter(service =>
-    ['Coiffure africaine', 'Tresses', 'Extensions', 'Coupe classique', 'Couleur'].includes(service.category)
-  );
-  const pedicureServices = filteredServices.filter(service => service.category === 'Pédicure');
 
   const renderServiceCard = (service: Service) => (
     <Card key={service.id} className="transition-all duration-200 hover:shadow-lg hover:scale-[1.02] overflow-hidden">
@@ -86,40 +89,45 @@ const ServicesList = ({ onEdit, onAdd, onDelete }: ServicesListProps) => {
               <p className="text-xs text-muted-foreground mt-1">{service.excluded}</p>
             </div>
           )}
+          {service.variants.length > 0 && (
+            <div className="col-span-2">
+              <span className="font-medium">Variantes:</span>
+              <p className="text-xs text-muted-foreground mt-1">{service.variants.join(', ')}</p>
+            </div>
+          )}
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => onEdit(service)} className="flex-1" aria-label={`Modifier le service ${service.name}`}>
-            <Edit className="h-4 w-4 mr-2" />
-            Modifier
-          </Button>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="outline" size="sm" className="flex-1" aria-label={`Supprimer le service ${service.name}`}>
-                <Trash2 className="h-4 w-4 mr-2" />
-                Supprimer
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => onEdit(service)} className="flex-1" aria-label={`Modifier ${entityDefiniteArticle} ${entitySingular} ${service.name}`}>
+              <Edit className="h-4 w-4 mr-2" />
+              Modifier
+            </Button>
+            {onToggle && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onToggle(service.id)}
+                className="flex-1"
+                aria-label={`${service.status === 'active' ? 'Désactiver' : 'Activer'} ${entityDefiniteArticle} ${entitySingular} ${service.name}`}
+              >
+                <Power className="h-4 w-4 mr-2" />
+                {service.status === 'active' ? 'Désactiver' : 'Activer'}
               </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Êtes-vous sûr de vouloir supprimer le service "{service.name}" ? Cette action est irréversible.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Annuler</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => {
-                    deleteService(service.id);
-                    onDelete?.(service.id, service.name);
-                  }}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                >
-                  Supprimer
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+            )}
+          </div>
+          <Button
+            variant="destructive"
+            size="sm"
+            className="w-full"
+            onClick={() => confirmDelete(service.name, () => {
+              deleteService(service.id);
+              onDelete?.(service.id, service.name);
+            })}
+            aria-label={`Supprimer ${entityDefiniteArticle} ${entitySingular} ${service.name}`}
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Supprimer
+          </Button>
         </div>
       </CardContent>
     </Card>
@@ -128,15 +136,15 @@ const ServicesList = ({ onEdit, onAdd, onDelete }: ServicesListProps) => {
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-        <Button onClick={onAdd} aria-label="Ajouter un nouveau service">
+        <Button onClick={onAdd} aria-label={`Ajouter ${entityIndefiniteArticle} ${entitySingular}`}>
           <Plus className="h-4 w-4 mr-2" />
-          Ajouter un service
+          {`Ajouter ${entityIndefiniteArticle} ${entitySingular}`}
         </Button>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <div className="relative flex-1 sm:flex-initial">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Rechercher un service..."
+              placeholder={`Rechercher ${entityIndefiniteArticle} ${entitySingular}...`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 w-full sm:w-64"
@@ -155,42 +163,16 @@ const ServicesList = ({ onEdit, onAdd, onDelete }: ServicesListProps) => {
         </div>
       </div>
 
-      <Tabs defaultValue="coiffure" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="coiffure">Coiffure</TabsTrigger>
-          <TabsTrigger value="pedicure">Pédicure</TabsTrigger>
-        </TabsList>
-        <TabsContent value="coiffure" className="space-y-4 mt-6">
-          {coiffureServices.length === 0 ? (
-            <Card>
-              <CardContent className="pt-6">
-                <p className="text-center text-muted-foreground">
-                  Aucun service de coiffure défini.
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {coiffureServices.map(renderServiceCard)}
-            </div>
-          )}
-        </TabsContent>
-        <TabsContent value="pedicure" className="space-y-4 mt-6">
-          {pedicureServices.length === 0 ? (
-            <Card>
-              <CardContent className="pt-6">
-                <p className="text-center text-muted-foreground">
-                  Aucun service de pédicure défini.
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {pedicureServices.map(renderServiceCard)}
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
+      {filteredServices.length === 0 ? (
+        <p className="text-center text-muted-foreground">
+          {`${(entityDefiniteArticle === 'la' || entityIndefiniteArticle === 'une') ? 'Aucune' : 'Aucun'} ${entitySingular} ${(entityDefiniteArticle === 'la' || entityIndefiniteArticle === 'une') ? 'définie.' : 'défini.'}`}
+        </p>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {filteredServices.map(renderServiceCard)}
+        </div>
+      )}
+      <ConfirmDeleteDialog />
     </div>
   );
 };

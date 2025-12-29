@@ -6,46 +6,78 @@ import { Link } from "react-router-dom";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import galleryBraids from "@/assets/gallery-braids.jpg";
 import pedicure from "@/assets/pedicure.jpg";
+import { useServices } from "@/hooks/useServices";
+import { Service } from "@/lib/types";
 
-const services = [
-  {
+const categoryConfig = {
+  africaine: {
     id: "coiffure",
     icon: Scissors,
-    title: "Coiffure Africaine et Européenne",
-    description:
-      "Spécialiste en nattes, tresses, twists, extensions et colorations. Experte en coiffures de mariage.",
+    title: "Coiffure Africaine",
+    description: "Spécialiste en nattes, tresses et extensions capillaires.",
     image: galleryBraids,
-    features: [
-      "Nattes et tresses",
-      "Twists naturels",
-      "Extensions capillaires",
-      "Coupes et brushings",
-      "Colorations et balayages",
-      "Coiffures de mariage",
-    ]
+    link: "/coiffure"
   },
-  {
+  europeenne: {
+    id: "coiffure-europeenne",
+    icon: Scissors,
+    title: "Coiffure Européenne",
+    description: "Coupes, brushings, balayages et colorations professionnels.",
+    image: galleryBraids,
+    link: "/coiffure"
+  },
+  evenementiel: {
+    id: "evenementiel",
+    icon: Scissors,
+    title: "Coiffures Événementielles",
+    description: "Coiffures de mariage personnalisées pour événements spéciaux.",
+    image: galleryBraids,
+    link: "/coiffure"
+  },
+  regard: {
+    id: "regard",
+    icon: Hand,
+    title: "Soins du Regard",
+    description: "Pose de faux cils pour un regard intense.",
+    image: galleryBraids,
+    link: "#contact"
+  },
+  pedicure: {
     id: "pedicure",
     icon: Hand,
-    title: "Pédicure et Manucure",
-    description:
-      "Pédicure médicale complète et manucure professionnelle avec soins spécialisés.",
+    title: "Pédicure",
+    description: "Pédicure médicale et soin esthétique des pieds.",
     image: pedicure,
-    features: [
-      "Traitement des durillons et cors",
-      "Soins des ongles incarnés",
-      "Pédicure simple",
-      "Manucure et vernis semi-permanent",
-      "Massage relaxant",
-    ]
+    link: "/pedicure"
   },
-];
+  manucure: {
+    id: "manucure",
+    icon: Hand,
+    title: "Manucure",
+    description: "Pose de vernis semi-permanent pour les ongles.",
+    image: pedicure,
+    link: "/pedicure"
+  }
+};
 
 const ServicesSection = () => {
+  const { services } = useServices();
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
+
+  // Grouper les services par catégorie et créer les objets de service
+  const groupedServices = Object.keys(categoryConfig).map(categoryKey => {
+    const config = categoryConfig[categoryKey as keyof typeof categoryConfig];
+    const categoryServices = services.filter(service => service.category === categoryKey && service.status === 'active');
+    const features = categoryServices.map(service => service.name);
+
+    return {
+      ...config,
+      features
+    };
+  }).filter(service => service.features.length > 0); // Ne montrer que les catégories avec des services actifs
 
   useEffect(() => {
     if (!api) {
@@ -100,7 +132,7 @@ const ServicesSection = () => {
             className="max-w-6xl mx-auto"
           >
             <CarouselContent>
-              {services.map((service, index) => (
+              {groupedServices.map((service, index) => (
                 <CarouselItem key={service.id}>
                   <Card
                     variant="elevated"
@@ -152,18 +184,8 @@ const ServicesSection = () => {
                       </div>
 
                       {/* CTA */}
-                      {service.id === "coiffure" ? (
-                        <Link to="/coiffure">
-                          <Button variant="soft" className="w-full group/btn">
-                            En savoir plus
-                            <ArrowRight
-                              size={16}
-                              className="transition-transform group-hover/btn:translate-x-1"
-                            />
-                          </Button>
-                        </Link>
-                      ) : service.id === "pedicure" ? (
-                        <Link to="/pedicure">
+                      {service.link.startsWith("/") ? (
+                        <Link to={service.link}>
                           <Button variant="soft" className="w-full group/btn">
                             En savoir plus
                             <ArrowRight
@@ -173,7 +195,7 @@ const ServicesSection = () => {
                           </Button>
                         </Link>
                       ) : (
-                        <a href="#contact">
+                        <a href={service.link}>
                           <Button variant="soft" className="w-full group/btn">
                             Réserver ce service
                             <ArrowRight
@@ -209,7 +231,7 @@ const ServicesSection = () => {
         {/* Services Grid for medium+ screens */}
         <div className="hidden md:block">
           <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            {services.map((service, index) => (
+            {groupedServices.map((service, index) => (
               <Card
                 key={service.id}
                 variant="elevated"
@@ -261,18 +283,8 @@ const ServicesSection = () => {
                   </div>
 
                   {/* CTA */}
-                  {service.id === "coiffure" ? (
-                    <Link to="/coiffure">
-                      <Button variant="soft" className="w-full group/btn">
-                        En savoir plus
-                        <ArrowRight
-                          size={16}
-                          className="transition-transform group-hover/btn:translate-x-1"
-                        />
-                      </Button>
-                    </Link>
-                  ) : service.id === "pedicure" ? (
-                    <Link to="/pedicure">
+                  {service.link.startsWith("/") ? (
+                    <Link to={service.link}>
                       <Button variant="soft" className="w-full group/btn">
                         En savoir plus
                         <ArrowRight
@@ -282,7 +294,7 @@ const ServicesSection = () => {
                       </Button>
                     </Link>
                   ) : (
-                    <a href="#contact">
+                    <a href={service.link}>
                       <Button variant="soft" className="w-full group/btn">
                         Réserver ce service
                         <ArrowRight

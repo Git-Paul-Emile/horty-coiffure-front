@@ -31,8 +31,8 @@ const pedicureServices = [
       "Massage relaxant des pieds",
       "Conseils personnalisés",
     ],
-    duration: "45 min à 1h",
-    price: "À partir de 35€",
+    duration: "1h",
+    price: "40€",
   },
   {
     id: "pedicure-simple",
@@ -45,8 +45,8 @@ const pedicureServices = [
       "Hydratation légère",
       "Finition impeccable",
     ],
-    duration: "30 min à 45 min",
-    price: "À partir de 25€",
+    duration: "45 min",
+    price: "25€",
   },
   {
     id: "manucure",
@@ -59,8 +59,8 @@ const pedicureServices = [
       "Soin des cuticules",
       "Durée longue tenue",
     ],
-    duration: "30 min à 45 min",
-    price: "À partir de 20€",
+    duration: "45 min",
+    price: "20€",
   },
 ];
 

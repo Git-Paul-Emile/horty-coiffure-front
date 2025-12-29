@@ -34,17 +34,17 @@ const HeroSection = () => {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium">
               <Star size={16} className="fill-primary" />
-              {adminSettings.heroSettings.badge}
+              {adminSettings.heroSettings?.badge || "Plus de 30 ans d'expérience"}
             </div>
 
             {/* Headline */}
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
-              {adminSettings.heroSettings.title}
+              {adminSettings.heroSettings?.title || "L'art de la coiffure africaine à Tirlemont"}
             </h1>
 
             {/* Subheadline */}
             <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-              {adminSettings.heroSettings.subtitle}
+              {adminSettings.heroSettings?.subtitle || "Vous cherchez une coiffure africaine ou européenne réalisée par une professionnelle expérimentée ? Découvrez notre savoir-faire unique en nattes, tresses, twists, extensions et autres techniques de coiffure."}
             </p>
 
             {/* CTA Buttons */}
@@ -93,7 +93,7 @@ const HeroSection = () => {
                   ))}
                 </div>
                 <div className="text-sm">
-                  <span className="font-semibold text-foreground">{adminSettings.heroSettings.clientsCount}+</span>
+                  <span className="font-semibold text-foreground">{adminSettings.heroSettings?.clientsCount || 500}+</span>
                   <span className="text-muted-foreground"> clientes satisfaites</span>
                 </div>
               </div>
@@ -107,7 +107,7 @@ const HeroSection = () => {
                   />
                 ))}
                 <span className="text-sm text-muted-foreground ml-2">
-                  {adminSettings.heroSettings.rating}/5 sur Google
+                  {adminSettings.heroSettings?.rating || 4.9}/5 sur Google
                 </span>
               </div>
             </div>
@@ -119,7 +119,7 @@ const HeroSection = () => {
               {/* Main Image */}
               <div className="relative rounded-3xl overflow-hidden shadow-elevated">
                 <img
-                  src={adminSettings.heroSettings.image || heroImage}
+                  src={adminSettings.heroSettings?.image || heroImage}
                   alt="Coiffure africaine professionnelle chez Horty Coiffure"
                   className="w-full h-[500px] md:h-[600px] object-cover"
                 />

@@ -10,6 +10,7 @@ import PublicProducts from "@/pages/PublicProducts";
 import AdminLogin from "./pages/AdminLogin";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
+import Prestations from "./pages/Prestations";
 import Services from "./pages/Services";
 import Products from "./pages/Products";
 import Partners from "./pages/Partners";
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/admin/dashboard" element={<Dashboard />} />
           <Route path="/admin/settings" element={<Settings />} />
           <Route path="/admin/services" element={<Services />} />
+          <Route path="/admin/prestations" element={<Prestations />} />
           <Route path="/admin/products" element={<Products />} />
           <Route path="/admin/partners" element={<Partners />} />
           <Route path="/admin/realizations" element={<Realizations />} />

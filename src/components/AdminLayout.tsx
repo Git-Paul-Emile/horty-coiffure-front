@@ -1,7 +1,9 @@
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger, SidebarGroup, SidebarGroupLabel } from "@/components/ui/sidebar";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogOut, Home, Scissors, Calendar, Users, Settings, Image, Package, MessageSquare, Tag, Newspaper } from "lucide-react";
+import { LogOut, Home, Scissors, Calendar, Users, Settings, Image, Package, MessageSquare, Tag, Newspaper, Sparkles, ChevronDown } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useState } from "react";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -9,6 +11,12 @@ interface AdminLayoutProps {
 
 const AdminLayout = ({ children }: AdminLayoutProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [isPrestationOpen, setIsPrestationOpen] = useState(
+    location.pathname === "/admin/prestations" ||
+    location.pathname === "/admin/services" ||
+    location.pathname === "/admin/categories"
+  );
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -45,17 +53,51 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  className={`hover:bg-primary/10 hover:text-primary ${
-                    isActive("/admin/services") ? "bg-primary/10 text-primary" : ""
-                  }`}
-                >
-                  <Link to="/admin/services">
-                    <Scissors className="h-4 w-4" />
-                    Services
-                  </Link>
-                </SidebarMenuButton>
+                <Collapsible open={isPrestationOpen} onOpenChange={setIsPrestationOpen}>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton
+                      className={`hover:bg-primary/10 hover:text-primary ${
+                        isActive("/admin/prestations") ? "bg-primary/10 text-primary" : ""
+                      }`}
+                      onClick={() => {
+                        navigate("/admin/prestations");
+                        setIsPrestationOpen(true);
+                      }}
+                    >
+                      <Sparkles className="h-4 w-4" />
+                      Prestations
+                      <ChevronDown className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180" />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="space-y-1">
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        asChild
+                        className={`hover:bg-primary/10 hover:text-primary ml-4 ${
+                          isActive("/admin/services") ? "bg-primary/10 text-primary" : ""
+                        }`}
+                      >
+                        <Link to="/admin/services">
+                          <Scissors className="h-4 w-4" />
+                          Services
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        asChild
+                        className={`hover:bg-primary/10 hover:text-primary ml-4 ${
+                          isActive("/admin/categories") ? "bg-primary/10 text-primary" : ""
+                        }`}
+                      >
+                        <Link to="/admin/categories">
+                          <Tag className="h-4 w-4" />
+                          Catégories
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </CollapsibleContent>
+                </Collapsible>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
@@ -135,19 +177,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  className={`hover:bg-primary/10 hover:text-primary ${
-                    isActive("/admin/categories") ? "bg-primary/10 text-primary" : ""
-                  }`}
-                >
-                  <Link to="/admin/categories">
-                    <Tag className="h-4 w-4" />
-                    Catégories
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+
             </SidebarMenu>
           </SidebarGroup>
           <SidebarGroup>
@@ -188,3 +218,4 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
 };
 
 export default AdminLayout;
+
