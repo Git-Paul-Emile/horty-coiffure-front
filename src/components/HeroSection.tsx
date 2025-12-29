@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Star, Calendar } from "lucide-react";
 import heroImage from "@/assets/hero-image.jpg";
 import { useAppointments } from '@/hooks/useAppointments';
+import { useAdminSettings } from '@/hooks/useAdminSettings';
 
 declare global {
   interface Calendly {
@@ -14,6 +15,7 @@ declare global {
 
 const HeroSection = () => {
   const { settings } = useAppointments();
+  const { settings: adminSettings } = useAdminSettings();
   return (
     <section
       id="accueil"
@@ -32,21 +34,17 @@ const HeroSection = () => {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium">
               <Star size={16} className="fill-primary" />
-              Plus de 30 ans d'expérience
+              {adminSettings.heroSettings.badge}
             </div>
 
             {/* Headline */}
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
-              L'art de la{" "}
-              <span className="text-primary">coiffure africaine</span>{" "}
-              à Tirlemont
+              {adminSettings.heroSettings.title}
             </h1>
 
             {/* Subheadline */}
             <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-              Vous cherchez une coiffure africaine ou européenne réalisée par une professionnelle 
-              expérimentée ? Découvrez notre savoir-faire unique en nattes, tresses, 
-              twists, extensions et autres techniques de coiffure.
+              {adminSettings.heroSettings.subtitle}
             </p>
 
             {/* CTA Buttons */}
@@ -95,7 +93,7 @@ const HeroSection = () => {
                   ))}
                 </div>
                 <div className="text-sm">
-                  <span className="font-semibold text-foreground">500+</span>
+                  <span className="font-semibold text-foreground">{adminSettings.heroSettings.clientsCount}+</span>
                   <span className="text-muted-foreground"> clientes satisfaites</span>
                 </div>
               </div>
@@ -109,7 +107,7 @@ const HeroSection = () => {
                   />
                 ))}
                 <span className="text-sm text-muted-foreground ml-2">
-                  4.9/5 sur Google
+                  {adminSettings.heroSettings.rating}/5 sur Google
                 </span>
               </div>
             </div>
@@ -121,7 +119,7 @@ const HeroSection = () => {
               {/* Main Image */}
               <div className="relative rounded-3xl overflow-hidden shadow-elevated">
                 <img
-                  src={heroImage}
+                  src={adminSettings.heroSettings.image || heroImage}
                   alt="Coiffure africaine professionnelle chez Horty Coiffure"
                   className="w-full h-[500px] md:h-[600px] object-cover"
                 />

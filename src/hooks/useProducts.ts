@@ -95,10 +95,18 @@ export const useProducts = () => {
     saveProducts(updated);
   };
 
+  const toggleProductStatus = (id: string) => {
+    const updated = products.map(product =>
+      product.id === id ? { ...product, status: product.status === 'active' ? 'inactive' : 'active' as 'active' | 'inactive' } : product
+    );
+    saveProducts(updated);
+  };
+
   return {
     products,
     addProduct,
     updateProduct,
     deleteProduct,
+    toggleProductStatus,
   };
 };

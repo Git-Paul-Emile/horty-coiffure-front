@@ -102,10 +102,12 @@ interface CategoryFormProps {
 }
 
 const CategoryForm = ({ category, open, onClose, onSave }: CategoryFormProps) => {
+  const { categories } = useCategories();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (category) {
@@ -119,47 +121,76 @@ const CategoryForm = ({ category, open, onClose, onSave }: CategoryFormProps) =>
         description: '',
       });
     }
+    setErrors({});
   }, [category, open]);
+
+  const validate = () => {
+    const newErrors: Record<string, string> = {};
+    if (!formData.name.trim()) {
+      newErrors.name = 'Le nom est requis';
+    } else {
+      const existingCategory = categories.find(cat =>
+        cat.name.toLowerCase() === formData.name.toLowerCase().trim() &&
+        (!category || cat.id !== category.id)
+      );
+      if (existingCategory) {
+        newErrors.name = 'Une catégorie avec ce nom existe déjà';
+      }
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    if (!validate()) return;
+    onSave({ ...formData, name: formData.name.trim() });
     onClose();
   };
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    setErrors(prev => ({ ...prev, [field]: '' }));
   };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {category ? 'Modifier la catégorie' : 'Ajouter une catégorie'}
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="name">Nom de la catégorie</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) => handleChange('name', e.target.value)}
-              required
-            />
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Informations générales</h3>
+              <div className="space-y-4 mt-4">
+                <div>
+                  <Label htmlFor="name">Nom de la catégorie</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => handleChange('name', e.target.value)}
+                    required
+                    autoFocus
+                    aria-describedby={errors.name ? "name-error" : undefined}
+                    aria-invalid={!!errors.name}
+                  />
+                  {errors.name && <p id="name-error" className="text-red-500 text-sm mt-1">{errors.name}</p>}
+                </div>
+                <div>
+                  <Label htmlFor="description">Description (optionnel)</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => handleChange('description', e.target.value)}
+                    rows={3}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
-
-          <div>
-            <Label htmlFor="description">Description (optionnel)</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => handleChange('description', e.target.value)}
-              rows={3}
-            />
-          </div>
-
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               Annuler

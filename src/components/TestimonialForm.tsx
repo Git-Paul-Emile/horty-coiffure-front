@@ -26,6 +26,8 @@ const TestimonialForm = ({ testimonial, open, onClose, onSave }: TestimonialForm
     status: 'pending' as 'pending' | 'approved' | 'rejected',
   });
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   useEffect(() => {
     if (testimonial) {
       setFormData({
@@ -44,87 +46,106 @@ const TestimonialForm = ({ testimonial, open, onClose, onSave }: TestimonialForm
         status: 'pending',
       });
     }
+    setErrors({});
   }, [testimonial, open]);
+
+  const validate = () => {
+    const newErrors: Record<string, string> = {};
+    if (!formData.name.trim()) newErrors.name = 'Le nom est requis';
+    if (!formData.text.trim()) newErrors.text = 'Le témoignage est requis';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validate()) return;
     onSave(formData);
     onClose();
   };
 
   const handleChange = (field: string, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    setErrors(prev => ({ ...prev, [field]: '' }));
   };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {testimonial ? 'Modifier le témoignage' : 'Ajouter un témoignage'}
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="name">Nom du client</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) => handleChange('name', e.target.value)}
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="text">Témoignage</Label>
-            <Textarea
-              id="text"
-              value={formData.text}
-              onChange={(e) => handleChange('text', e.target.value)}
-              rows={4}
-              required
-            />
-          </div>
-
-          <div className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-6">
             <div>
-              <Label>Note</Label>
-              <StarRating
-                rating={formData.rating}
-                onRatingChange={(rating) => handleChange('rating', rating)}
-              />
+              <h3 className="text-lg font-semibold text-gray-900">Informations générales</h3>
+              <div className="space-y-4 mt-4">
+                <div>
+                  <Label htmlFor="name">Nom du client</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => handleChange('name', e.target.value)}
+                    required
+                    autoFocus
+                    aria-describedby={errors.name ? "name-error" : undefined}
+                    aria-invalid={!!errors.name}
+                  />
+                  {errors.name && <p id="name-error" className="text-red-500 text-sm mt-1">{errors.name}</p>}
+                </div>
+                <div>
+                  <Label htmlFor="text">Témoignage</Label>
+                  <Textarea
+                    id="text"
+                    value={formData.text}
+                    onChange={(e) => handleChange('text', e.target.value)}
+                    rows={4}
+                    required
+                    aria-describedby={errors.text ? "text-error" : undefined}
+                    aria-invalid={!!errors.text}
+                  />
+                  {errors.text && <p id="text-error" className="text-red-500 text-sm mt-1">{errors.text}</p>}
+                </div>
+                <div>
+                  <Label>Note</Label>
+                  <StarRating
+                    rating={formData.rating}
+                    onRatingChange={(rating) => handleChange('rating', rating)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="service">Service</Label>
+                  <Select value={formData.service} onValueChange={(value) => handleChange('service', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez un service" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {services.map((service) => (
+                        <SelectItem key={service.id} value={service.name}>
+                          {service.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
             <div>
-              <Label htmlFor="service">Service</Label>
-              <Select value={formData.service} onValueChange={(value) => handleChange('service', value)}>
+              <Label htmlFor="status">Statut</Label>
+              <Select value={formData.status} onValueChange={(value: 'pending' | 'approved' | 'rejected') => handleChange('status', value)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Sélectionnez un service" />
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {services.map((service) => (
-                    <SelectItem key={service.id} value={service.name}>
-                      {service.name}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="pending">En attente</SelectItem>
+                  <SelectItem value="approved">Approuvé</SelectItem>
+                  <SelectItem value="rejected">Rejeté</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
-
-          <div>
-            <Label htmlFor="status">Statut</Label>
-            <Select value={formData.status} onValueChange={(value: 'pending' | 'approved' | 'rejected') => handleChange('status', value)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="pending">En attente</SelectItem>
-                <SelectItem value="approved">Approuvé</SelectItem>
-                <SelectItem value="rejected">Rejeté</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               Annuler

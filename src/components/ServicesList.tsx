@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Edit, Trash2, Plus, Search } from 'lucide-react';
 import { useServices } from '@/hooks/useServices';
 
@@ -154,41 +155,42 @@ const ServicesList = ({ onEdit, onAdd, onDelete }: ServicesListProps) => {
         </div>
       </div>
 
-      {/* Section Coiffure */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold">Coiffure</h3>
-        {coiffureServices.length === 0 ? (
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-center text-muted-foreground">
-                Aucun service de coiffure défini.
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {coiffureServices.map(renderServiceCard)}
-          </div>
-        )}
-      </div>
-
-      {/* Section Pédicure */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold">Pédicure</h3>
-        {pedicureServices.length === 0 ? (
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-center text-muted-foreground">
-                Aucun service de pédicure défini.
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {pedicureServices.map(renderServiceCard)}
-          </div>
-        )}
-      </div>
+      <Tabs defaultValue="coiffure" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="coiffure">Coiffure</TabsTrigger>
+          <TabsTrigger value="pedicure">Pédicure</TabsTrigger>
+        </TabsList>
+        <TabsContent value="coiffure" className="space-y-4 mt-6">
+          {coiffureServices.length === 0 ? (
+            <Card>
+              <CardContent className="pt-6">
+                <p className="text-center text-muted-foreground">
+                  Aucun service de coiffure défini.
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {coiffureServices.map(renderServiceCard)}
+            </div>
+          )}
+        </TabsContent>
+        <TabsContent value="pedicure" className="space-y-4 mt-6">
+          {pedicureServices.length === 0 ? (
+            <Card>
+              <CardContent className="pt-6">
+                <p className="text-center text-muted-foreground">
+                  Aucun service de pédicure défini.
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {pedicureServices.map(renderServiceCard)}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

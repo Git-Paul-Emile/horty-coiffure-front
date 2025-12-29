@@ -1,19 +1,18 @@
 import { useSearchParams } from "react-router-dom";
-import ProductsManagement from "@/components/ProductsManagement";
+import NewsManagement from "@/components/NewsManagement";
 import AdminLayout from "@/components/AdminLayout";
 
-const Products = () => {
+const News = () => {
   const [searchParams] = useSearchParams();
   const action = searchParams.get("action");
 
   return (
     <AdminLayout>
       <div className="p-6">
-        <h1 className="text-3xl font-bold mb-6">Gestion des Produits</h1>
-        <ProductsManagement initialAction={action === "add" ? "add" : null} />
+        <NewsManagement />
       </div>
     </AdminLayout>
   );
 };
 
-export default Products;
+export default News;

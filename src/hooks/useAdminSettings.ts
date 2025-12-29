@@ -20,6 +20,14 @@ const defaultSettings: AdminSettings = {
     email: "admin@hortycoiffure.be",
     password: "admin123", // Default password, should be changed
   },
+  heroSettings: {
+    title: "L'art de la coiffure africaine à Tirlemont",
+    subtitle: "Vous cherchez une coiffure africaine ou européenne réalisée par une professionnelle expérimentée ? Découvrez notre savoir-faire unique en nattes, tresses, twists, extensions et autres techniques de coiffure.",
+    badge: "Plus de 30 ans d'expérience",
+    clientsCount: 500,
+    rating: 4.9,
+    image: "/hero-image.jpg",
+  },
 };
 
 export const useAdminSettings = () => {
@@ -52,11 +60,16 @@ export const useAdminSettings = () => {
     updateSettings({ adminCredentials: { ...settings.adminCredentials, ...adminCredentials } });
   };
 
+  const updateHeroSettings = (heroSettings: Partial<AdminSettings['heroSettings']>) => {
+    updateSettings({ heroSettings: { ...settings.heroSettings, ...heroSettings } });
+  };
+
   return {
     settings,
     updateSettings,
     updateOpeningHours,
     updateContactInfo,
     updateAdminCredentials,
+    updateHeroSettings,
   };
 };

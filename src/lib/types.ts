@@ -53,6 +53,15 @@ export interface Testimonial {
   status: 'pending' | 'approved' | 'rejected';
 }
 
+export interface News {
+  id: string;
+  title: string;
+  content: string;
+  image?: string;
+  publishedAt: string;
+  status: 'draft' | 'published';
+}
+
 export interface AppointmentSettings {
   calendlyUrl: string;
   urgencyMode: boolean;
@@ -77,8 +86,18 @@ export interface AdminCredentials {
   password: string;
 }
 
+export interface HeroSettings {
+  title: string;
+  subtitle: string;
+  badge: string;
+  clientsCount: number;
+  rating: number;
+  image?: string;
+}
+
 export interface AdminSettings {
   openingHours: OpeningHour[];
   contactInfo: ContactInfo;
   adminCredentials: AdminCredentials;
+  heroSettings: HeroSettings;
 }
