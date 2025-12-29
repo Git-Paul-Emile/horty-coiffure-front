@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Edit, Trash2, Plus, Search, Power } from 'lucide-react';
 import { useServices } from '@/hooks/useServices';
+import { useCategories } from '@/hooks/useCategories';
 import { useConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 
 interface ServicesListProps {
@@ -21,20 +22,23 @@ interface ServicesListProps {
 }
 
 const ServicesList = ({ onEdit, onAdd, onDelete, onToggle, entitySingular = 'prestation', entityPlural = 'Prestations', entityDefiniteArticle = 'la', entityIndefiniteArticle = 'une' }: ServicesListProps) => {
-  const { services, deleteService } = useServices();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
-  const { confirmDelete, ConfirmDeleteDialog } = useConfirmDeleteDialog({
-    title: 'Confirmer la suppression',
-    description: `Êtes-vous sûr de vouloir supprimer ${entityDefiniteArticle} ${entitySingular}`,
-  });
+   const { services, deleteService } = useServices();
+   const { categories } = useCategories();
+   const [searchTerm, setSearchTerm] = useState('');
+   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+   const { confirmDelete, ConfirmDeleteDialog } = useConfirmDeleteDialog({
+     title: 'Confirmer la suppression',
+     description: `Êtes-vous sûr de vouloir supprimer ${entityDefiniteArticle} ${entitySingular}`,
+   });
 
-  // Filtrer les services selon la recherche et le statut
+  // Filtrer les services selon la recherche, le statut et la catégorie
   const filteredServices = services.filter(service => {
     const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         service.description.toLowerCase().includes(searchTerm.toLowerCase());
+                          service.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || service.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesCategory = categoryFilter === 'all' || service.category === categoryFilter;
+    return matchesSearch && matchesStatus && matchesCategory;
   });
 
 
@@ -68,6 +72,9 @@ const ServicesList = ({ onEdit, onAdd, onDelete, onToggle, entitySingular = 'pre
           )}
         </div>
         <p className="text-sm text-muted-foreground mt-1">{service.description}</p>
+        <p className="text-xs text-muted-foreground mt-1">
+          Catégorie: {categories.find(cat => cat.id === service.category)?.name || 'Non définie'}
+        </p>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="grid grid-cols-2 gap-3 text-sm mb-4">
@@ -150,6 +157,22 @@ const ServicesList = ({ onEdit, onAdd, onDelete, onToggle, entitySingular = 'pre
               className="pl-10 w-full sm:w-64"
             />
           </div>
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger className="w-full sm:w-40">
+              <SelectValue placeholder="Toutes les catégories" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toutes les catégories</SelectItem>
+              {categories.filter(c => c.parentId).map(category => {
+                const parent = categories.find(p => p.id === category.parentId);
+                return (
+                  <SelectItem key={category.id} value={category.id}>
+                    {parent ? `${parent.name} - ${category.name}` : category.name}
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
           <Select value={statusFilter} onValueChange={(value: 'all' | 'active' | 'inactive') => setStatusFilter(value)}>
             <SelectTrigger className="w-full sm:w-40">
               <SelectValue />

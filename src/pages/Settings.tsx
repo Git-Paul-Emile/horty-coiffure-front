@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import AdminLayout from "@/components/AdminLayout";
 import { useAdminSettings } from "@/hooks/useAdminSettings";
@@ -274,12 +275,12 @@ const Settings = () => {
                   />
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox
+                  <Switch
                     id="urgency-mode"
                     checked={appointmentSettingsState.urgencyMode}
                     onCheckedChange={(checked) => setAppointmentSettingsState({ ...appointmentSettingsState, urgencyMode: checked as boolean })}
                   />
-                  <Label htmlFor="urgency-mode">Mode urgence activé</Label>
+                  <Label htmlFor="urgency-mode">Mode urgence</Label>
                 </div>
                 <div>
                   <Label htmlFor="urgency-message">Message d'urgence</Label>

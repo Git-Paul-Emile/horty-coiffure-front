@@ -1,7 +1,7 @@
-import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger, SidebarGroup, SidebarGroupLabel } from "@/components/ui/sidebar";
+import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger, SidebarGroup, SidebarGroupLabel, SidebarMenuSub, SidebarMenuSubItem, SidebarMenuSubButton } from "@/components/ui/sidebar";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogOut, Home, Scissors, Calendar, Users, Settings, Image, Package, MessageSquare, Tag, Newspaper, Sparkles, ChevronDown } from "lucide-react";
+import { LogOut, Home, Scissors, Users, Settings, Image, Package, MessageSquare, Tag, Newspaper, Sparkles, ChevronDown } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState } from "react";
 
@@ -69,34 +69,30 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                       <ChevronDown className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180" />
                     </SidebarMenuButton>
                   </CollapsibleTrigger>
-                  <CollapsibleContent className="space-y-1">
-                    <SidebarMenuItem>
-                      <SidebarMenuButton
+                  <SidebarMenuSub>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton
                         asChild
-                        className={`hover:bg-primary/10 hover:text-primary ml-4 ${
-                          isActive("/admin/services") ? "bg-primary/10 text-primary" : ""
-                        }`}
+                        isActive={isActive("/admin/services")}
                       >
                         <Link to="/admin/services">
                           <Scissors className="h-4 w-4" />
                           Services
                         </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton
                         asChild
-                        className={`hover:bg-primary/10 hover:text-primary ml-4 ${
-                          isActive("/admin/categories") ? "bg-primary/10 text-primary" : ""
-                        }`}
+                        isActive={isActive("/admin/categories")}
                       >
                         <Link to="/admin/categories">
                           <Tag className="h-4 w-4" />
                           Catégories
                         </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  </CollapsibleContent>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                  </SidebarMenuSub>
                 </Collapsible>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -122,19 +118,6 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                   <Link to="/admin/realizations">
                     <Image className="h-4 w-4" />
                     Réalisations
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  className={`hover:bg-primary/10 hover:text-primary ${
-                    isActive("/admin/appointments") ? "bg-primary/10 text-primary" : ""
-                  }`}
-                >
-                  <Link to="/admin/appointments">
-                    <Calendar className="h-4 w-4" />
-                    Rendez-vous
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
