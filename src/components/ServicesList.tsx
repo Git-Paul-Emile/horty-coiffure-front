@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Edit, Trash2, Plus, Search, Power } from 'lucide-react';
 import { useServices } from '@/hooks/useServices';
 import { useCategories } from '@/hooks/useCategories';
-import { useConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import { useConfirmDeleteDialog } from '@/hooks/useConfirmDeleteDialog';
 
 interface ServicesListProps {
   onEdit: (service: Service) => void;
@@ -94,12 +94,6 @@ const ServicesList = ({ onEdit, onAdd, onDelete, onToggle, entitySingular = 'pre
             <div className="col-span-2">
               <span className="font-medium">Non inclus:</span>
               <p className="text-xs text-muted-foreground mt-1">{service.excluded}</p>
-            </div>
-          )}
-          {service.variants.length > 0 && (
-            <div className="col-span-2">
-              <span className="font-medium">Variantes:</span>
-              <p className="text-xs text-muted-foreground mt-1">{service.variants.join(', ')}</p>
             </div>
           )}
         </div>

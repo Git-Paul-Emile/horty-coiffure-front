@@ -7,6 +7,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Upload, X } from 'lucide-react';
+import { usePartners } from '@/hooks/usePartners';
+import { useProductCategories } from '@/hooks/useProductCategories';
 
 interface ProductFormProps {
   product?: Product | null;
@@ -16,6 +18,8 @@ interface ProductFormProps {
 }
 
 const ProductForm = ({ product, open, onClose, onSave }: ProductFormProps) => {
+  const { partners } = usePartners();
+  const { categories: productCategories } = useProductCategories();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -170,22 +174,34 @@ const ProductForm = ({ product, open, onClose, onSave }: ProductFormProps) => {
                   </div>
                   <div>
                     <Label htmlFor="brand">Marque</Label>
-                    <Input
-                      id="brand"
-                      value={formData.brand}
-                      onChange={(e) => handleChange('brand', e.target.value)}
-                      placeholder="Ex: Babor®"
-                    />
+                    <Select value={formData.brand} onValueChange={(value) => handleChange('brand', value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionner une marque" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {partners.map((partner) => (
+                          <SelectItem key={partner.id} value={partner.name}>
+                            {partner.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
                 <div>
                   <Label htmlFor="category">Catégorie</Label>
-                  <Input
-                    id="category"
-                    value={formData.category}
-                    onChange={(e) => handleChange('category', e.target.value)}
-                    placeholder="Ex: Soins capillaires"
-                  />
+                  <Select value={formData.category} onValueChange={(value) => handleChange('category', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner une catégorie" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {productCategories.filter(cat => cat.status === 'active').map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div>
                   <Label htmlFor="status">Statut</Label>

@@ -34,7 +34,7 @@ const Actualites = () => {
 
           {/* News Feed */}
           {publishedNews.length > 0 ? (
-            <div className="max-w-4xl mx-auto space-y-8">
+            <div className="max-w-5xl mx-auto space-y-8">
               {publishedNews.map((item, index) => (
                 <Card
                   key={item.id}
@@ -42,57 +42,61 @@ const Actualites = () => {
                   className={`overflow-hidden group animate-fade-in-up animation-delay-${(index + 1) * 100} hover:shadow-xl transition-all duration-500`}
                 >
                   <CardContent className="p-0">
-                    {/* Image */}
-                    {item.image && (
-                      <div className="relative h-64 md:h-80 overflow-hidden">
-                        <img
-                          src={item.image}
-                          alt={item.title}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                        <div className="absolute top-4 left-4">
-                          <div className="bg-primary/90 backdrop-blur-sm text-primary-foreground text-xs font-medium px-3 py-1 rounded-full">
-                            Actualité
+                    <div className="md:flex">
+                      {/* Image */}
+                      {item.image && (
+                        <div className="md:w-1/3 relative h-32 md:h-40 overflow-hidden">
+                          <img
+                            src={item.image}
+                            alt={item.title}
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                          <div className="absolute top-3 left-3">
+                            <div className="bg-primary/90 backdrop-blur-sm text-primary-foreground text-xs font-medium px-2 py-1 rounded-full">
+                              Actualité
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
-                    <div className="p-6 md:p-8">
-                      {/* Date */}
-                      <div className="flex items-center gap-2 text-muted-foreground text-sm mb-4">
-                        <Calendar size={16} />
-                        {new Date(item.publishedAt).toLocaleDateString('fr-FR', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
-                      </div>
+                      <div className={`p-4 md:p-6 ${item.image ? 'md:w-2/3' : 'w-full'}`}>
+                        {/* Date */}
+                        <div className="flex items-center gap-2 text-muted-foreground text-sm mb-3">
+                          <Calendar size={14} />
+                          {new Date(item.publishedAt).toLocaleString('fr-FR', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </div>
 
-                      {/* Title */}
-                      <h3 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-4 group-hover:text-primary transition-colors duration-300">
-                        {item.title}
-                      </h3>
+                        {/* Title */}
+                        <h3 className="font-display text-xl md:text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
+                          {item.title}
+                        </h3>
 
-                      {/* Content */}
-                      <p className="text-muted-foreground leading-relaxed text-base md:text-lg mb-6">
-                        {item.content}
-                      </p>
+                        {/* Content */}
+                        <p className="text-muted-foreground leading-relaxed text-sm md:text-base mb-4">
+                          {item.content}
+                        </p>
 
-                      {/* Read More */}
-                      <div className="pt-4 border-t border-border">
-                        <button className="text-primary font-medium text-sm hover:text-primary/80 transition-colors duration-300 flex items-center gap-2 group/btn">
-                          Lire la suite
-                          <svg
-                            className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </button>
+                        {/* Read More */}
+                        <div className="pt-4 border-t border-border">
+                          <button className="text-primary font-medium text-sm hover:text-primary/80 transition-colors duration-300 flex items-center gap-2 group/btn">
+                            Lire la suite
+                            <svg
+                              className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </CardContent>

@@ -5,18 +5,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Trash2, Search, Star, Eye, EyeOff } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Trash2, Search, Star, Eye, EyeOff, Archive } from 'lucide-react';
 import { useFeedbacks } from '@/hooks/useFeedbacks';
+import { useConfirmDeleteDialog } from '@/hooks/useConfirmDeleteDialog';
 
 interface FeedbacksListProps {
   onDelete?: (feedbackId: string, feedbackName: string) => void;
 }
 
 const FeedbacksList = ({ onDelete }: FeedbacksListProps) => {
-  const { feedbacks, deleteFeedback, markAsRead } = useFeedbacks();
+  const { feedbacks, deleteFeedback, toggleReadStatus, archiveFeedback, updateFeedback } = useFeedbacks();
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'unread' | 'read'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'unread' | 'read' | 'archived'>('all');
+  const { confirmDelete, ConfirmDeleteDialog } = useConfirmDeleteDialog({
+    title: 'Confirmer la suppression',
+    description: 'Êtes-vous sûr de vouloir supprimer ce feedback',
+  });
 
   // Filtrer les feedbacks selon la recherche et le statut
   const filteredFeedbacks = feedbacks.filter(feedback => {
@@ -29,6 +34,7 @@ const FeedbacksList = ({ onDelete }: FeedbacksListProps) => {
     switch (status) {
       case 'read': return 'default';
       case 'unread': return 'secondary';
+      case 'archived': return 'outline';
       default: return 'secondary';
     }
   };
@@ -37,6 +43,7 @@ const FeedbacksList = ({ onDelete }: FeedbacksListProps) => {
     switch (status) {
       case 'read': return 'Lu';
       case 'unread': return 'Non lu';
+      case 'archived': return 'Archivé';
       default: return status;
     }
   };
@@ -52,7 +59,7 @@ const FeedbacksList = ({ onDelete }: FeedbacksListProps) => {
   };
 
   const renderFeedbackCard = (feedback: Feedback) => (
-    <Card key={feedback.id} className={`transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${feedback.status === 'unread' ? 'border-l-4 border-l-primary' : ''}`}>
+    <Card key={feedback.id} className="transition-all duration-200 hover:shadow-lg hover:scale-[1.02]">
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
           <CardTitle className="text-lg font-semibold">
@@ -75,45 +82,40 @@ const FeedbacksList = ({ onDelete }: FeedbacksListProps) => {
         <p className="text-sm text-muted-foreground mb-3 line-clamp-3">
           "{feedback.comment}"
         </p>
-        <div className="flex gap-2">
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => toggleReadStatus(feedback.id)}
+              className="flex-1"
+            >
+              {feedback.status === 'unread' ? <Eye className="h-4 w-4 mr-2" /> : <EyeOff className="h-4 w-4 mr-2" />}
+              {feedback.status === 'unread' ? 'Marquer lu' : 'Marquer non lu'}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => feedback.status === 'archived' ? updateFeedback(feedback.id, { status: 'read' }) : archiveFeedback(feedback.id)}
+              className="flex-1"
+            >
+              <Archive className="h-4 w-4 mr-2" />
+              {feedback.status === 'archived' ? 'Désarchiver' : 'Archiver'}
+            </Button>
+          </div>
           <Button
-            variant="outline"
+            variant="destructive"
             size="sm"
-            onClick={() => markAsRead(feedback.id)}
-            className="flex-1"
-            aria-label={`Marquer comme ${feedback.status === 'unread' ? 'lu' : 'non lu'}`}
+            className="w-full"
+            onClick={() => confirmDelete('ce feedback', () => {
+              deleteFeedback(feedback.id);
+              onDelete?.(feedback.id, 'Feedback Anonyme');
+            })}
+            aria-label="Supprimer ce feedback anonyme"
           >
-            {feedback.status === 'unread' ? <Eye className="h-4 w-4 mr-2" /> : <EyeOff className="h-4 w-4 mr-2" />}
-            {feedback.status === 'unread' ? 'Marquer comme lu' : 'Marquer comme non lu'}
+            <Trash2 className="h-4 w-4 mr-2" />
+            Supprimer
           </Button>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="outline" size="sm" className="flex-1" aria-label="Supprimer ce feedback anonyme">
-                <Trash2 className="h-4 w-4 mr-2" />
-                Supprimer
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Êtes-vous sûr de vouloir supprimer ce feedback ? Cette action est irréversible.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Annuler</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => {
-                    deleteFeedback(feedback.id);
-                    onDelete?.(feedback.id, 'Feedback Anonyme');
-                  }}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                >
-                  Supprimer
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
         </div>
       </CardContent>
     </Card>
@@ -123,7 +125,7 @@ const FeedbacksList = ({ onDelete }: FeedbacksListProps) => {
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
         <h2 className="text-xl font-semibold">Feedbacks reçus ({feedbacks.length})</h2>
-        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto max-w-full overflow-x-auto">
           <div className="relative flex-1 sm:flex-initial">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -133,7 +135,7 @@ const FeedbacksList = ({ onDelete }: FeedbacksListProps) => {
               className="pl-10 w-full sm:w-64"
             />
           </div>
-          <Select value={statusFilter} onValueChange={(value: 'all' | 'unread' | 'read') => setStatusFilter(value)}>
+          <Select value={statusFilter} onValueChange={(value: 'all' | 'unread' | 'read' | 'archived') => setStatusFilter(value)}>
             <SelectTrigger className="w-full sm:w-40">
               <SelectValue />
             </SelectTrigger>
@@ -141,6 +143,7 @@ const FeedbacksList = ({ onDelete }: FeedbacksListProps) => {
               <SelectItem value="all">Tous les statuts</SelectItem>
               <SelectItem value="unread">Non lus</SelectItem>
               <SelectItem value="read">Lus</SelectItem>
+              <SelectItem value="archived">Archivés</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -161,6 +164,7 @@ const FeedbacksList = ({ onDelete }: FeedbacksListProps) => {
           </div>
         )}
       </div>
+      <ConfirmDeleteDialog />
     </div>
   );
 };

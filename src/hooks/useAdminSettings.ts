@@ -24,8 +24,6 @@ const defaultSettings: AdminSettings = {
     title: "L'art de la coiffure africaine à Tirlemont",
     subtitle: "Vous cherchez une coiffure africaine ou européenne réalisée par une professionnelle expérimentée ? Découvrez notre savoir-faire unique en nattes, tresses, twists, extensions et autres techniques de coiffure.",
     badge: "Plus de 30 ans d'expérience",
-    clientsCount: 500,
-    rating: 4.9,
     image: "/hero-image.jpg",
   },
   socialLinks: {

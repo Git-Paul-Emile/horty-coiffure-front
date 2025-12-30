@@ -23,6 +23,7 @@ const RealizationForm = ({ realization, open, onClose, onSave }: RealizationForm
     serviceId: '',
     caption: '',
     title: '',
+    status: 'active' as 'active' | 'inactive',
   });
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -38,6 +39,7 @@ const RealizationForm = ({ realization, open, onClose, onSave }: RealizationForm
         serviceId: realization.serviceId,
         caption: realization.caption,
         title: realization.title || '',
+        status: realization.status,
       });
       setImagePreview(realization.image);
     } else {
@@ -46,6 +48,7 @@ const RealizationForm = ({ realization, open, onClose, onSave }: RealizationForm
         serviceId: '',
         caption: '',
         title: '',
+        status: 'active',
       });
       setImagePreview('');
     }
@@ -136,6 +139,18 @@ const RealizationForm = ({ realization, open, onClose, onSave }: RealizationForm
                     aria-invalid={!!errors.caption}
                   />
                   {errors.caption && <p id="caption-error" className="text-red-500 text-sm mt-1">{errors.caption}</p>}
+                </div>
+                <div>
+                  <Label htmlFor="status">Statut</Label>
+                  <Select value={formData.status} onValueChange={(value: 'active' | 'inactive') => handleChange('status', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner le statut" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Actif</SelectItem>
+                      <SelectItem value="inactive">Désactivé</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>

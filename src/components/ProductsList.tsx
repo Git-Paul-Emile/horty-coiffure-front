@@ -5,9 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Edit, Trash2, Plus, Search } from 'lucide-react';
+import { Edit, Trash2, Plus, Search, Power } from 'lucide-react';
 import { useProducts } from '@/hooks/useProducts';
+import { useProductCategories } from '@/hooks/useProductCategories';
+import { useConfirmDeleteDialog } from '@/hooks/useConfirmDeleteDialog';
 
 interface ProductsListProps {
   onEdit: (product: Product) => void;
@@ -16,17 +17,24 @@ interface ProductsListProps {
 }
 
 const ProductsList = ({ onEdit, onAdd, onDelete }: ProductsListProps) => {
-  const { products, deleteProduct } = useProducts();
+  const { products, deleteProduct, toggleProductStatus } = useProducts();
+  const { categories } = useProductCategories();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const { confirmDelete, ConfirmDeleteDialog } = useConfirmDeleteDialog({
+    title: 'Confirmer la suppression',
+    description: 'Êtes-vous sûr de vouloir supprimer le produit',
+  });
 
-  // Filtrer les produits selon la recherche et le statut
+  // Filtrer les produits selon la recherche, le statut et la catégorie
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (product.brand && product.brand.toLowerCase().includes(searchTerm.toLowerCase()));
+                          product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (product.brand && product.brand.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesStatus = statusFilter === 'all' || product.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesCategory = categoryFilter === 'all' || product.category === categoryFilter;
+    return matchesSearch && matchesStatus && matchesCategory;
   });
 
   // Grouper les produits filtrés par catégorie
@@ -82,39 +90,30 @@ const ProductsList = ({ onEdit, onAdd, onDelete }: ProductsListProps) => {
             <Badge variant="outline">{product.category}</Badge>
           )}
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => onEdit(product)} className="flex-1" aria-label={`Modifier le produit ${product.name}`}>
-            <Edit className="h-4 w-4 mr-2" />
-            Modifier
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => onEdit(product)} className="flex-1" aria-label={`Modifier le produit ${product.name}`}>
+              <Edit className="h-4 w-4 mr-2" />
+              Modifier
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => toggleProductStatus(product.id)} className="flex-1" aria-label={`${product.status === 'active' ? 'Désactiver' : 'Activer'} le produit ${product.name}`}>
+              <Power className="h-4 w-4 mr-2" />
+              {product.status === 'active' ? 'Désactiver' : 'Activer'}
+            </Button>
+          </div>
+          <Button
+            variant="destructive"
+            size="sm"
+            className="w-full"
+            onClick={() => confirmDelete(product.name, () => {
+              deleteProduct(product.id);
+              onDelete?.(product.id, product.name);
+            })}
+            aria-label={`Supprimer le produit ${product.name}`}
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Supprimer
           </Button>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="outline" size="sm" className="flex-1" aria-label={`Supprimer le produit ${product.name}`}>
-                <Trash2 className="h-4 w-4 mr-2" />
-                Supprimer
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Êtes-vous sûr de vouloir supprimer le produit "{product.name}" ? Cette action est irréversible.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Annuler</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => {
-                    deleteProduct(product.id);
-                    onDelete?.(product.id, product.name);
-                  }}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                >
-                  Supprimer
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
         </div>
       </CardContent>
     </Card>
@@ -127,7 +126,7 @@ const ProductsList = ({ onEdit, onAdd, onDelete }: ProductsListProps) => {
           <Plus className="h-4 w-4 mr-2" />
           Ajouter un produit
         </Button>
-        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto max-w-full overflow-x-auto">
           <div className="relative flex-1 sm:flex-initial">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -137,6 +136,19 @@ const ProductsList = ({ onEdit, onAdd, onDelete }: ProductsListProps) => {
               className="pl-10 w-full sm:w-64"
             />
           </div>
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger className="w-full sm:w-40">
+              <SelectValue placeholder="Toutes les catégories" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toutes les catégories</SelectItem>
+              {categories.map(category => (
+                <SelectItem key={category.id} value={category.name}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Select value={statusFilter} onValueChange={(value: 'all' | 'active' | 'inactive') => setStatusFilter(value)}>
             <SelectTrigger className="w-full sm:w-40">
               <SelectValue />
@@ -168,6 +180,7 @@ const ProductsList = ({ onEdit, onAdd, onDelete }: ProductsListProps) => {
           </div>
         ))
       )}
+      <ConfirmDeleteDialog />
     </div>
   );
 };

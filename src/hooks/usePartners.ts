@@ -13,6 +13,7 @@ export const usePartners = () => {
         description: 'Marque premium de soins capillaires et de beauté',
         logo: '/placeholder.svg',
         website: 'https://www.babor.com',
+        status: 'active',
       },
       {
         id: '2',
@@ -20,6 +21,7 @@ export const usePartners = () => {
         description: 'Produits naturels et biologiques pour les soins quotidiens',
         logo: '/placeholder.svg',
         website: '#',
+        status: 'active',
       },
     ];
 
@@ -59,10 +61,18 @@ export const usePartners = () => {
     savePartners(updated);
   };
 
+  const togglePartnerStatus = (id: string) => {
+    const updated = partners.map(partner =>
+      partner.id === id ? { ...partner, status: partner.status === 'active' ? 'inactive' : 'active' as 'active' | 'inactive' } : partner
+    );
+    savePartners(updated);
+  };
+
   return {
     partners,
     addPartner,
     updatePartner,
     deletePartner,
+    togglePartnerStatus,
   };
 };

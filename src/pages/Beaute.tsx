@@ -160,13 +160,15 @@ const Beaute = () => {
 
                       {/* Duration & Price */}
                       <div className="flex items-center justify-between pt-4 border-t border-border">
-                        <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                          <Clock size={16} />
-                          {Math.floor(service.duration / 60)}h{service.duration % 60 > 0 ? `${service.duration % 60}min` : ''}
+                        <div className="bg-muted/50 rounded-lg px-3 py-1">
+                          <div className="flex items-center gap-1 text-muted-foreground text-xs">
+                            <Clock size={14} />
+                            <span>{Math.floor(service.duration / 60)}h{service.duration % 60 > 0 ? `${service.duration % 60}min` : ''}</span>
+                          </div>
                         </div>
-                        <span className="font-display text-xl font-bold text-primary">
+                        <div className="text-xl font-bold text-primary bg-primary/10 px-3 py-1 rounded-full">
                           {service.price}€
-                        </span>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>

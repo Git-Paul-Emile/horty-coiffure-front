@@ -3,9 +3,11 @@ import { Partner } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Edit, Trash2, Plus, Search, ExternalLink } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Edit, Trash2, Plus, Search, ExternalLink, Power } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { usePartners } from '@/hooks/usePartners';
+import { useConfirmDeleteDialog } from '@/hooks/useConfirmDeleteDialog';
 
 interface PartnersListProps {
   onEdit: (partner: Partner) => void;
@@ -14,14 +16,20 @@ interface PartnersListProps {
 }
 
 const PartnersList = ({ onEdit, onAdd, onDelete }: PartnersListProps) => {
-  const { partners, deletePartner } = usePartners();
+  const { partners, deletePartner, togglePartnerStatus } = usePartners();
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const { confirmDelete, ConfirmDeleteDialog } = useConfirmDeleteDialog({
+    title: 'Confirmer la suppression',
+    description: 'Êtes-vous sûr de vouloir supprimer la marque',
+  });
 
-  // Filtrer les partenaires selon la recherche
+  // Filtrer les marques selon la recherche et le statut
   const filteredPartners = partners.filter(partner => {
     const matchesSearch = partner.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (partner.description && partner.description.toLowerCase().includes(searchTerm.toLowerCase()));
-    return matchesSearch;
+                          (partner.description && partner.description.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesStatus = statusFilter === 'all' || partner.status === statusFilter;
+    return matchesSearch && matchesStatus;
   });
 
   const renderPartnerCard = (partner: Partner) => (
@@ -29,6 +37,9 @@ const PartnersList = ({ onEdit, onAdd, onDelete }: PartnersListProps) => {
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
           <CardTitle className="text-lg font-semibold">{partner.name}</CardTitle>
+          <Badge variant={partner.status === 'active' ? 'default' : 'secondary'}>
+            {partner.status === 'active' ? 'Actif' : 'Désactivé'}
+          </Badge>
         </div>
       </CardHeader>
       <CardContent className="pt-0">
@@ -73,39 +84,30 @@ const PartnersList = ({ onEdit, onAdd, onDelete }: PartnersListProps) => {
             </div>
           )}
 
-          <div className="flex gap-2 pt-4">
-            <Button variant="outline" size="sm" onClick={() => onEdit(partner)} className="flex-1" aria-label={`Modifier le partenaire ${partner.name}`}>
-              <Edit className="h-4 w-4 mr-2" />
-              Modifier
+          <div className="space-y-2 pt-4">
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => onEdit(partner)} className="flex-1" aria-label={`Modifier la marque ${partner.name}`}>
+                <Edit className="h-4 w-4 mr-2" />
+                Modifier
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => togglePartnerStatus(partner.id)} className="flex-1" aria-label={`${partner.status === 'active' ? 'Désactiver' : 'Activer'} la marque ${partner.name}`}>
+                <Power className="h-4 w-4 mr-2" />
+                {partner.status === 'active' ? 'Désactiver' : 'Activer'}
+              </Button>
+            </div>
+            <Button
+              variant="destructive"
+              size="sm"
+              className="w-full"
+              onClick={() => confirmDelete(partner.name, () => {
+                deletePartner(partner.id);
+                onDelete?.(partner.id, partner.name);
+              })}
+              aria-label={`Supprimer la marque ${partner.name}`}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Supprimer
             </Button>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="outline" size="sm" className="flex-1" aria-label={`Supprimer le partenaire ${partner.name}`}>
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Supprimer
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Êtes-vous sûr de vouloir supprimer le partenaire "{partner.name}" ? Cette action est irréversible.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Annuler</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => {
-                      deletePartner(partner.id);
-                      onDelete?.(partner.id, partner.name);
-                    }}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  >
-                    Supprimer
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
           </div>
         </div>
       </CardContent>
@@ -114,19 +116,32 @@ const PartnersList = ({ onEdit, onAdd, onDelete }: PartnersListProps) => {
 
   return (
     <div className="space-y-8">
+      <h2 className="text-2xl font-bold">Gestion des Marques</h2>
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-        <Button onClick={onAdd} aria-label="Ajouter un nouveau partenaire">
+        <Button onClick={onAdd} aria-label="Ajouter une nouvelle marque">
           <Plus className="h-4 w-4 mr-2" />
-          Ajouter un partenaire
+          Ajouter une marque
         </Button>
-        <div className="relative flex-1 sm:flex-initial">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Rechercher un partenaire..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 w-full sm:w-64"
-          />
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto max-w-full overflow-x-auto">
+          <div className="relative flex-1 sm:flex-initial">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Rechercher une marque..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 w-full sm:w-64"
+            />
+          </div>
+          <Select value={statusFilter} onValueChange={(value: 'all' | 'active' | 'inactive') => setStatusFilter(value)}>
+            <SelectTrigger className="w-full sm:w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tous les statuts</SelectItem>
+              <SelectItem value="active">Actif</SelectItem>
+              <SelectItem value="inactive">Désactivé</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -134,7 +149,7 @@ const PartnersList = ({ onEdit, onAdd, onDelete }: PartnersListProps) => {
         <Card>
           <CardContent className="pt-6">
             <p className="text-center text-muted-foreground">
-              Aucun partenaire défini.
+              Aucune marque définie.
             </p>
           </CardContent>
         </Card>
@@ -143,6 +158,7 @@ const PartnersList = ({ onEdit, onAdd, onDelete }: PartnersListProps) => {
           {filteredPartners.map(renderPartnerCard)}
         </div>
       )}
+      <ConfirmDeleteDialog />
     </div>
   );
 };

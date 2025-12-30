@@ -9,6 +9,14 @@ const defaultNews: News[] = [
     publishedAt: new Date().toISOString(),
     status: 'published',
   },
+  {
+    id: '2',
+    title: 'Nouvelles coiffures tressées pour 2026',
+    content: 'Découvrez les dernières tendances en coiffures tressées pour 2026. Des styles modernes et élégants pour toutes les occasions.',
+    image: '/gallery-braids.jpg',
+    publishedAt: new Date(Date.now() - 86400000).toISOString(), // 1 jour avant
+    status: 'published',
+  },
 ];
 
 export const useNews = () => {
@@ -16,12 +24,19 @@ export const useNews = () => {
 
   useEffect(() => {
     const stored = localStorage.getItem('news');
+    let newsData: News[];
     if (stored) {
-      setNews(JSON.parse(stored));
+      newsData = JSON.parse(stored);
+      // Si les données stockées ont moins d'éléments que les defaults, mettre à jour avec defaults
+      if (newsData.length < defaultNews.length) {
+        newsData = defaultNews;
+        localStorage.setItem('news', JSON.stringify(newsData));
+      }
     } else {
-      localStorage.setItem('news', JSON.stringify(defaultNews));
-      setNews(defaultNews);
+      newsData = defaultNews;
+      localStorage.setItem('news', JSON.stringify(newsData));
     }
+    setNews(newsData);
   }, []);
 
   const addNews = (newsData: Omit<News, 'id'>) => {

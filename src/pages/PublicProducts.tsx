@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search } from 'lucide-react';
 import { useProducts } from '@/hooks/useProducts';
+import { useProductCategories } from '@/hooks/useProductCategories';
 import { slugify } from '@/lib/utils';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -14,8 +15,14 @@ import Footer from '@/components/Footer';
 const PublicProducts = () => {
   const location = useLocation();
   const { products } = useProducts();
+  const { categories: productCategories } = useProductCategories();
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<'all' | string>('all');
+
+  const getCategoryName = (categoryId: string) => {
+    const category = productCategories.find(cat => cat.id === categoryId);
+    return category ? category.name : categoryId;
+  };
 
   useEffect(() => {
     if (location.hash && products.length > 0) {
@@ -43,16 +50,16 @@ const PublicProducts = () => {
 
   // Grouper les produits filtrés par catégorie
   const groupedProducts = filteredProducts.reduce((acc, product) => {
-    const category = product.category || 'Autres';
-    if (!acc[category]) {
-      acc[category] = [];
+    const categoryName = product.category ? getCategoryName(product.category) : 'Autres';
+    if (!acc[categoryName]) {
+      acc[categoryName] = [];
     }
-    acc[category].push(product);
+    acc[categoryName].push(product);
     return acc;
   }, {} as Record<string, Product[]>);
 
-  // Obtenir toutes les catégories uniques
-  const categories = Array.from(new Set(activeProducts.map(p => p.category || 'Autres')));
+  // Obtenir toutes les catégories actives
+  const categories = productCategories.filter(cat => cat.status === 'active').map(cat => cat.id);
 
   const renderProductCard = (product: Product) => (
     <Card key={product.id} id={slugify(product.name)} className="group transition-all duration-300 hover:shadow-xl hover:scale-[1.03] overflow-hidden border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
@@ -92,7 +99,7 @@ const PublicProducts = () => {
           </div>
           {product.category && (
             <Badge variant="secondary" className="bg-primary/20 text-primary hover:bg-primary hover:text-white transition-colors duration-200">
-              {product.category}
+              {getCategoryName(product.category)}
             </Badge>
           )}
         </div>
@@ -136,9 +143,9 @@ const PublicProducts = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Toutes les catégories</SelectItem>
-                {categories.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category}
+                {productCategories.filter(cat => cat.status === 'active').map((category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
                   </SelectItem>
                 ))}
               </SelectContent>

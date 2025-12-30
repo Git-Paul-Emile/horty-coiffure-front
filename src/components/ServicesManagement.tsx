@@ -9,7 +9,7 @@ import { Edit, Plus, Search, Trash2, Power } from 'lucide-react';
 import { useCategories } from '@/hooks/useCategories';
 import ServiceForm from './ServiceForm';
 import { useToast } from '@/hooks/use-toast';
-import { useConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import { useConfirmDeleteDialog } from '@/hooks/useConfirmDeleteDialog';
 
 interface ServicesManagementProps {
   initialAction?: 'add' | null;
@@ -177,7 +177,7 @@ const ServicesManagement = ({ initialAction }: ServicesManagementProps) => {
       <h1 className="text-3xl font-bold mb-6">Gestion des Services</h1>
       <div className="space-y-8">
         <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-          <Button onClick={handleAdd}>
+          <Button variant="outline" onClick={handleAdd}>
             <Plus className="h-4 w-4 mr-2" />
             Ajouter un service
           </Button>

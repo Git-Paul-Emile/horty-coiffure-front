@@ -10,7 +10,25 @@ export const useFeedbacks = () => {
     if (stored) {
       setFeedbacks(JSON.parse(stored));
     } else {
-      setFeedbacks([]);
+      // Add sample feedback
+      const sampleFeedbacks: Feedback[] = [
+        {
+          id: '1',
+          rating: 5,
+          comment: 'Excellent service ! Les coiffeuses sont très professionnelles et le résultat est toujours à la hauteur de mes attentes. Je recommande vivement ce salon.',
+          createdAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+          status: 'read',
+        },
+        {
+          id: '2',
+          rating: 4,
+          comment: 'Très satisfaite de ma coiffure. L\'accueil est chaleureux et l\'équipe est sympathique. Petit bémol sur le temps d\'attente, mais c\'est normal pour un salon de qualité.',
+          createdAt: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+          status: 'unread',
+        },
+      ];
+      setFeedbacks(sampleFeedbacks);
+      localStorage.setItem('feedbacks', JSON.stringify(sampleFeedbacks));
     }
   }, []);
 
@@ -46,11 +64,24 @@ export const useFeedbacks = () => {
     updateFeedback(id, { status: 'read' });
   };
 
+  const toggleReadStatus = (id: string) => {
+    const feedback = feedbacks.find(f => f.id === id);
+    if (feedback) {
+      updateFeedback(id, { status: feedback.status === 'read' ? 'unread' : 'read' });
+    }
+  };
+
+  const archiveFeedback = (id: string) => {
+    updateFeedback(id, { status: 'archived' });
+  };
+
   return {
     feedbacks,
     addFeedback,
     updateFeedback,
     deleteFeedback,
     markAsRead,
+    toggleReadStatus,
+    archiveFeedback,
   };
 };

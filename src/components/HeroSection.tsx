@@ -39,7 +39,13 @@ const HeroSection = () => {
 
             {/* Headline */}
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
-              {adminSettings.heroSettings?.title || "L'art de la coiffure africaine à Tirlemont"}
+              {adminSettings.heroSettings?.title ? (
+                adminSettings.heroSettings.title
+              ) : (
+                <>
+                  L'art de la <span className="text-primary">coiffure</span> africaine à Tirlemont
+                </>
+              )}
             </h1>
 
             {/* Subheadline */}
@@ -93,7 +99,7 @@ const HeroSection = () => {
                   ))}
                 </div>
                 <div className="text-sm">
-                  <span className="font-semibold text-foreground">{adminSettings.heroSettings?.clientsCount || 500}+</span>
+                  <span className="font-semibold text-foreground">500+</span>
                   <span className="text-muted-foreground"> clientes satisfaites</span>
                 </div>
               </div>
@@ -107,7 +113,7 @@ const HeroSection = () => {
                   />
                 ))}
                 <span className="text-sm text-muted-foreground ml-2">
-                  {adminSettings.heroSettings?.rating || 4.9}/5 sur Google
+                  4.9/5 sur Google
                 </span>
               </div>
             </div>

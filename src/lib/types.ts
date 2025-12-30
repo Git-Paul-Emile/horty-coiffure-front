@@ -27,6 +27,7 @@ export interface Realization {
   serviceId: string; // Link to service
   caption: string;
   title?: string;
+  status: 'active' | 'inactive';
 }
 
 export interface Product {
@@ -46,6 +47,7 @@ export interface Partner {
   logo?: string;
   description?: string;
   website?: string;
+  status: 'active' | 'inactive';
 }
 
 export interface Testimonial {
@@ -63,7 +65,7 @@ export interface News {
   content: string;
   image?: string;
   publishedAt: string;
-  status: 'draft' | 'published';
+  status: 'draft' | 'published' | 'archived';
 }
 
 export interface UsefulInfo {
@@ -80,7 +82,7 @@ export interface Feedback {
   rating: number;
   comment: string;
   createdAt: string;
-  status: 'unread' | 'read';
+  status: 'unread' | 'read' | 'archived';
 }
 
 export interface AppointmentSettings {
@@ -111,8 +113,6 @@ export interface HeroSettings {
   title: string;
   subtitle: string;
   badge: string;
-  clientsCount: number;
-  rating: number;
   image?: string;
 }
 

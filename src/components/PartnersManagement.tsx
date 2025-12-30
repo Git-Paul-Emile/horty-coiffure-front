@@ -36,14 +36,14 @@ const PartnersManagement = ({ initialAction }: PartnersManagementProps) => {
       if (editingPartner) {
         updatePartner(editingPartner.id, partnerData);
         toast({
-          title: "Partenaire modifié",
-          description: "Le partenaire a été modifié avec succès.",
+          title: "Marque modifiée",
+          description: "La marque a été modifiée avec succès.",
         });
       } else {
         addPartner(partnerData);
         toast({
-          title: "Partenaire ajouté",
-          description: "Le nouveau partenaire a été ajouté avec succès.",
+          title: "Marque ajoutée",
+          description: "La nouvelle marque a été ajoutée avec succès.",
         });
       }
       setIsFormOpen(false);
@@ -66,8 +66,8 @@ const PartnersManagement = ({ initialAction }: PartnersManagementProps) => {
     try {
       // deletePartner est appelé dans PartnersList, mais on peut ajouter le toast ici
       toast({
-        title: "Partenaire supprimé",
-        description: `Le partenaire "${partnerName}" a été supprimé avec succès.`,
+        title: "Marque supprimée",
+        description: `La marque "${partnerName}" a été supprimée avec succès.`,
       });
     } catch (error) {
       toast({

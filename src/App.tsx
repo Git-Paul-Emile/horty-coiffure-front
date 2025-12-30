@@ -22,6 +22,7 @@ import Realizations from "./pages/Realizations";
 import Appointments from "./pages/Appointments";
 import Testimonials from "./pages/Testimonials";
 import Categories from "./pages/Categories";
+import ProductCategories from "./pages/ProductCategories";
 import News from "./pages/News";
 import Feedbacks from "./pages/Feedbacks";
 import NotFound from "./pages/NotFound";
@@ -61,6 +62,7 @@ const AppContent = () => {
         <Route path="/admin/appointments" element={<Appointments />} />
         <Route path="/admin/testimonials" element={<Testimonials />} />
         <Route path="/admin/categories" element={<Categories />} />
+        <Route path="/admin/product-categories" element={<ProductCategories />} />
         <Route path="/admin/news" element={<News />} />
         <Route path="/admin/feedbacks" element={<Feedbacks />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

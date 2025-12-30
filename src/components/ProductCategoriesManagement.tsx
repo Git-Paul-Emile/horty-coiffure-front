@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Category } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,30 +9,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Edit, Trash2, Plus, Power } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { useCategories } from '@/hooks/useCategories';
+import { useProductCategories } from '@/hooks/useProductCategories';
 import ImageUpload from '@/components/ui/image-upload';
 import { useConfirmDeleteDialog } from '@/hooks/useConfirmDeleteDialog';
 
-const CategoriesManagement = () => {
+const ProductCategoriesManagement = () => {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const { categories, addCategory, updateCategory, deleteCategory, toggleCategory } = useCategories();
+  const { categories, addCategory, updateCategory, deleteCategory, toggleCategory } = useProductCategories();
   const { confirmDelete, ConfirmDeleteDialog } = useConfirmDeleteDialog({
     title: 'Confirmer la suppression',
-    description: 'Êtes-vous sûr de vouloir supprimer la catégorie',
+    description: 'Êtes-vous sûr de vouloir supprimer cette catégorie de produits',
   });
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [parentFilter, setParentFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
-  const parentCategories = categories.filter(c => !c.parentId);
   const filteredCategories = categories.filter(category => {
-    if (!category.parentId) return false; // only subcategories
     const matchesSearch = category.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesParent = parentFilter === 'all' || category.parentId === parentFilter;
     const matchesStatus = statusFilter === 'all' || category.status === statusFilter;
-    return matchesSearch && matchesParent && matchesStatus;
+    return matchesSearch && matchesStatus;
   });
 
   const handleAdd = () => {
@@ -71,7 +67,7 @@ const CategoriesManagement = () => {
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
-        <h2 className="text-2xl font-bold">Gestion des Catégories</h2>
+        <h2 className="text-2xl font-bold">Gestion des Catégories de Produits</h2>
         <Button onClick={handleAdd}>
           <Plus className="h-4 w-4 mr-2" />
           Ajouter une catégorie
@@ -85,17 +81,6 @@ const CategoriesManagement = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="flex-1"
         />
-        <Select value={parentFilter} onValueChange={(value) => setParentFilter(value)}>
-          <SelectTrigger className="w-full sm:w-48">
-            <SelectValue placeholder="Service parent" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tous les services parents</SelectItem>
-            {parentCategories.map((cat) => (
-              <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
         <Select value={statusFilter} onValueChange={(value: 'all' | 'active' | 'inactive') => setStatusFilter(value)}>
           <SelectTrigger className="w-full sm:w-32">
             <SelectValue placeholder="Statut" />
@@ -201,22 +186,20 @@ interface CategoryFormProps {
 }
 
 const CategoryForm = ({ category, open, onClose, onSave }: CategoryFormProps) => {
-  const { categories } = useCategories();
+  const { categories } = useProductCategories();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    parentId: '',
     status: 'active' as 'active' | 'inactive',
     image: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (category) {
       setFormData({
         name: category.name,
         description: category.description || '',
-        parentId: category.parentId || '',
         status: category.status || 'active',
         image: category.image || '',
       });
@@ -224,7 +207,6 @@ const CategoryForm = ({ category, open, onClose, onSave }: CategoryFormProps) =>
       setFormData({
         name: '',
         description: '',
-        parentId: '',
         status: 'active',
         image: '',
       });
@@ -252,7 +234,7 @@ const CategoryForm = ({ category, open, onClose, onSave }: CategoryFormProps) =>
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    onSave({ ...formData, name: formData.name.trim(), parentId: formData.parentId || undefined });
+    onSave({ ...formData, name: formData.name.trim() });
     onClose();
   };
 
@@ -263,82 +245,62 @@ const CategoryForm = ({ category, open, onClose, onSave }: CategoryFormProps) =>
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {category ? 'Modifier la catégorie' : 'Ajouter une catégorie'}
+            {category ? 'Modifier la catégorie' : 'Ajouter une catégorie de produits'}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">Informations générales</h3>
-              <div className="space-y-4 mt-4">
-                <div>
-                  <Label htmlFor="parentId">Service Parent</Label>
-                  <Select value={formData.parentId} onValueChange={(value) => handleChange('parentId', value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choisir où classer la catégorie" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.filter(c => !c.parentId).map((cat) => (
-                        <SelectItem key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="name">Nom de la Catégorie</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => handleChange('name', e.target.value)}
-                    required
-                    autoFocus
-                    aria-describedby={errors.name ? "name-error" : undefined}
-                    aria-invalid={!!errors.name}
-                  />
-                  {errors.name && <p id="name-error" className="text-red-500 text-sm mt-1">{errors.name}</p>}
-                </div>
-                <div>
-                  <Label htmlFor="description">Description de la catégorie</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => handleChange('description', e.target.value)}
-                    rows={3}
-                    placeholder="Texte explicatif de la catégorie"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="status">Statut</Label>
-                  <Select value={formData.status} onValueChange={(value: 'active' | 'inactive') => handleChange('status', value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner le statut" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="active">Actif</SelectItem>
-                      <SelectItem value="inactive">Désactivé</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <ImageUpload
-                  id="image"
-                  label="Image"
-                  value={formData.image}
-                  onChange={(file, preview) => {
-                    setFormData(prev => ({ ...prev, image: preview }));
-                    setErrors(prev => ({ ...prev, image: '' }));
-                  }}
-                  onError={(error) => setErrors(prev => ({ ...prev, image: error }))}
-                  error={errors.image}
-                  maxSize={2}
-                  acceptedTypes={['image/jpeg', 'image/png']}
-                />
-              </div>
+              <Label htmlFor="name">Nom de la Catégorie</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => handleChange('name', e.target.value)}
+                required
+                autoFocus
+                aria-describedby={errors.name ? "name-error" : undefined}
+                aria-invalid={!!errors.name}
+              />
+              {errors.name && <p id="name-error" className="text-red-500 text-sm mt-1">{errors.name}</p>}
             </div>
+            <div>
+              <Label htmlFor="description">Description de la catégorie</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => handleChange('description', e.target.value)}
+                rows={3}
+                placeholder="Texte explicatif de la catégorie"
+              />
+            </div>
+            <div>
+              <Label htmlFor="status">Statut</Label>
+              <Select value={formData.status} onValueChange={(value: 'active' | 'inactive') => handleChange('status', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionner le statut" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Actif</SelectItem>
+                  <SelectItem value="inactive">Désactivé</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <ImageUpload
+              id="image"
+              label="Image"
+              value={formData.image}
+              onChange={(file, preview) => {
+                setFormData(prev => ({ ...prev, image: preview }));
+                setErrors(prev => ({ ...prev, image: '' }));
+              }}
+              onError={(error) => setErrors(prev => ({ ...prev, image: error }))}
+              error={errors.image}
+              maxSize={2}
+              acceptedTypes={['image/jpeg', 'image/png']}
+            />
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
@@ -354,4 +316,4 @@ const CategoryForm = ({ category, open, onClose, onSave }: CategoryFormProps) =>
   );
 };
 
-export default CategoriesManagement;
+export default ProductCategoriesManagement;

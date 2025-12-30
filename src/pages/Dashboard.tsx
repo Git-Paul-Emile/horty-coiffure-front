@@ -1,10 +1,20 @@
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, Mail, Plus, Newspaper } from "lucide-react";
+import { Star, Package, MessageSquare, Settings } from "lucide-react";
 import AdminLayout from "@/components/AdminLayout";
+import { useServices } from "@/hooks/useServices";
+import { useTestimonials } from "@/hooks/useTestimonials";
+import { useProducts } from "@/hooks/useProducts";
+import { useFeedbacks } from "@/hooks/useFeedbacks";
 
 const Dashboard = () => {
+  const { services } = useServices();
+  const { testimonials } = useTestimonials();
+  const { products } = useProducts();
+  const { feedbacks } = useFeedbacks();
+
+  const unreadFeedbacks = feedbacks.filter(f => f.status === 'unread').length;
+  const recentFeedbacks = feedbacks.filter(f => f.status === 'unread').slice(-3).reverse();
+
   return (
     <AdminLayout>
       <div className="flex flex-1 flex-col gap-6 p-6">
@@ -15,132 +25,98 @@ const Dashboard = () => {
           </p>
         </div>
 
-        <div className="grid gap-4">
+        {/* Statistiques */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Nombre de demandes reçues
+                Prestations actives
               </CardTitle>
-              <Mail className="h-4 w-4 text-muted-foreground" />
+              <Settings className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">25</div>
+              <div className="text-2xl font-bold">{services.length}</div>
               <p className="text-xs text-muted-foreground">
-                Cette semaine
+                Services disponibles
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Témoignages
+              </CardTitle>
+              <Star className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{testimonials.length}</div>
+              <p className="text-xs text-muted-foreground">
+                Avis clients approuvés
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Produits
+              </CardTitle>
+              <Package className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{products.length}</div>
+              <p className="text-xs text-muted-foreground">
+                Produits en vente
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Feedbacks
+              </CardTitle>
+              <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{feedbacks.length}</div>
+              <p className="text-xs text-muted-foreground">
+                {unreadFeedbacks} non lus
               </p>
             </CardContent>
           </Card>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardTitle>Derniers emails et rendez-vous</CardTitle>
-              <CardDescription>
-                Communications et réservations récentes
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center">
-                  <Mail className="h-4 w-4 text-muted-foreground mr-2" />
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium leading-none">
-                      Demande de Marie Dupont
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Intéressée par une coupe + couleur - Aujourd'hui
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium leading-none">
-                      Rendez-vous avec Jean Martin
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Coupe homme - Aujourd'hui 15:30
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <Mail className="h-4 w-4 text-muted-foreground mr-2" />
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium leading-none">
-                      Email de Sophie Leroy
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Question sur la pédicure - Hier
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Services les plus consultés</CardTitle>
-              <CardDescription>
-                Popularité des services cette semaine
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="space-y-1">
-                      <span className="text-sm font-medium">Coupe + couleur</span>
+        {/* Derniers feedbacks */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Feedbacks non lus</CardTitle>
+            <CardDescription>
+              Avis et commentaires récents non encore consultés
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {recentFeedbacks.map((feedback) => (
+                <div key={feedback.id} className="flex items-start space-x-4">
+                  <div className="flex-1 space-y-1">
+                    <div className="flex items-center space-x-2">
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <span className="text-sm font-medium">{feedback.rating}/5</span>
                     </div>
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {feedback.comment}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(feedback.createdAt).toLocaleDateString('fr-FR')}
+                    </p>
                   </div>
-                  <span className="text-sm text-muted-foreground">45 consultations</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <TrendingUp className="h-4 w-4 text-muted-foreground mr-2" />
-                    <span className="text-sm font-medium">Pédicure</span>
-                  </div>
-                  <span className="text-sm text-muted-foreground">32 consultations</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="space-y-1">
-                      <span className="text-sm font-medium">Coupe homme</span>
-                    </div>
-                  </div>
-                  <span className="text-sm text-muted-foreground">28 consultations</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Raccourcis rapides</CardTitle>
-              <CardDescription>
-                Actions fréquentes
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Button asChild className="w-full justify-start" variant="outline">
-                <Link to="/admin/services?action=add">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Ajouter un service
-                </Link>
-              </Button>
-              <Button asChild className="w-full justify-start" variant="outline">
-                <Link to="/admin/testimonials?action=add">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Ajouter un témoignage
-                </Link>
-              </Button>
-              <Button asChild className="w-full justify-start" variant="outline">
-                <Link to="/admin/news?action=add">
-                  <Newspaper className="mr-2 h-4 w-4" />
-                  Publier une news
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+              ))}
+              {recentFeedbacks.length === 0 && (
+                <p className="text-sm text-muted-foreground">Aucun feedback récent</p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </AdminLayout>
   );

@@ -7,13 +7,26 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Edit, Trash2, Plus, Eye, Upload, X } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Edit, Trash2, Plus, Eye, Upload, X, Search, Archive } from 'lucide-react';
 import { useNews } from '@/hooks/useNews';
+import { useConfirmDeleteDialog } from '@/hooks/useConfirmDeleteDialog';
 
 const NewsManagement = () => {
   const [editingNews, setEditingNews] = useState<News | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const { news, addNews, updateNews, deleteNews } = useNews();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'published' | 'archived'>('all');
+  const { confirmDelete, ConfirmDeleteDialog } = useConfirmDeleteDialog({
+    title: 'Confirmer la suppression',
+    description: 'Êtes-vous sûr de vouloir supprimer cette actualité',
+  });
+  const filteredNews = news.filter(item => {
+  const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) || item.content.toLowerCase().includes(searchTerm.toLowerCase());
+  const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
+  return matchesSearch && matchesStatus;
+  });
 
   const handleAdd = () => {
     setEditingNews(null);
@@ -40,17 +53,55 @@ const NewsManagement = () => {
     setEditingNews(null);
   };
 
+  const handleToggleStatus = (id: string, currentStatus: 'draft' | 'published' | 'archived') => {
+    if (currentStatus === 'archived') {
+      updateNews(id, { status: 'published' });
+    } else {
+      const newStatus = currentStatus === 'published' ? 'draft' : 'published';
+      updateNews(id, { status: newStatus });
+    }
+  };
+  const handleToggleArchive = (id: string, currentStatus: 'draft' | 'published' | 'archived') => {
+    const newStatus = currentStatus === 'archived' ? 'published' : 'archived';
+    updateNews(id, { status: newStatus });
+  };
+
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
         <h2 className="text-2xl font-bold">Gestion des Actualités</h2>
-        <Button onClick={handleAdd}>
+        <Button variant="outline" onClick={handleAdd}>
           <Plus className="h-4 w-4 mr-2" />
           Ajouter une actualité
         </Button>
       </div>
 
-      {news.length === 0 ? (
+      <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto max-w-full overflow-x-auto">
+          <div className="relative flex-1 sm:flex-initial">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Rechercher une actualité..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 w-full sm:w-64"
+            />
+          </div>
+          <Select value={statusFilter} onValueChange={(value: 'all' | 'draft' | 'published' | 'archived') => setStatusFilter(value)}>
+            <SelectTrigger className="w-full sm:w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tous les statuts</SelectItem>
+              <SelectItem value="draft">Brouillon</SelectItem>
+              <SelectItem value="published">Publié</SelectItem>
+              <SelectItem value="archived">Archivé</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {filteredNews.length === 0 ? (
         <Card>
           <CardContent className="pt-6">
             <p className="text-center text-muted-foreground">
@@ -60,24 +111,39 @@ const NewsManagement = () => {
         </Card>
       ) : (
         <div className="grid gap-4">
-          {news.map((item) => (
+          {filteredNews.map((item) => (
             <Card key={item.id}>
               <CardHeader>
-                <div className="flex justify-between items-start">
+                <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-start">
                   <div>
                     <CardTitle className="text-lg">{item.title}</CardTitle>
                     <p className="text-sm text-muted-foreground">
-                      {new Date(item.publishedAt).toLocaleDateString('fr-FR')}
+                      {new Date(item.publishedAt).toLocaleString('fr-FR', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className={`px-2 py-1 rounded text-xs ${
                       item.status === 'published'
                         ? 'bg-green-100 text-green-800'
+                        : item.status === 'archived'
+                        ? 'bg-gray-100 text-gray-800'
                         : 'bg-yellow-100 text-yellow-800'
                     }`}>
-                      {item.status === 'published' ? 'Publié' : 'Brouillon'}
+                      {item.status === 'published' ? 'Publié' : item.status === 'archived' ? 'Archivé' : 'Brouillon'}
                     </span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-muted-foreground">Publier</span>
+                      <Switch
+                        checked={item.status === 'published'}
+                        onCheckedChange={() => handleToggleStatus(item.id, item.status)}
+                      />
+                    </div>
                   </div>
                 </div>
               </CardHeader>
@@ -85,12 +151,18 @@ const NewsManagement = () => {
                 <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                   {item.content}
                 </p>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => handleEdit(item)}>
-                    <Edit className="h-4 w-4 mr-1" />
-                    Modifier
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => deleteNews(item.id)}>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => handleEdit(item)}>
+                      <Edit className="h-4 w-4 mr-1" />
+                      Modifier
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleToggleArchive(item.id, item.status)}>
+                      <Archive className="h-4 w-4 mr-1" />
+                      {item.status === 'archived' ? 'Désarchiver' : 'Archiver'}
+                    </Button>
+                  </div>
+                  <Button variant="destructive" size="sm" onClick={() => confirmDelete(item.title, () => deleteNews(item.id))} className="w-full sm:w-auto">
                     <Trash2 className="h-4 w-4 mr-1" />
                     Supprimer
                   </Button>
@@ -107,6 +179,7 @@ const NewsManagement = () => {
         onClose={handleClose}
         onSave={handleSave}
       />
+      <ConfirmDeleteDialog />
     </div>
   );
 };
@@ -123,7 +196,7 @@ const NewsForm = ({ news, open, onClose, onSave }: NewsFormProps) => {
     title: '',
     content: '',
     image: '',
-    status: 'draft' as 'draft' | 'published',
+    status: 'draft' as 'draft' | 'published' | 'archived',
   });
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -297,6 +370,7 @@ const NewsForm = ({ news, open, onClose, onSave }: NewsFormProps) => {
                 <SelectContent>
                   <SelectItem value="draft">Brouillon</SelectItem>
                   <SelectItem value="published">Publié</SelectItem>
+                  <SelectItem value="archived">Archivé</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -305,7 +379,7 @@ const NewsForm = ({ news, open, onClose, onSave }: NewsFormProps) => {
             <Button type="button" variant="outline" onClick={onClose}>
               Annuler
             </Button>
-            <Button type="submit">
+            <Button type="submit" variant="outline">
               {news ? 'Modifier' : 'Ajouter'}
             </Button>
           </DialogFooter>

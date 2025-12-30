@@ -3,10 +3,12 @@ import { Realization } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Edit, Trash2, Plus, Search, Image } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Edit, Trash2, Plus, Search, Image, Power } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { useRealizations } from '@/hooks/useRealizations';
 import { useServices } from '@/hooks/useServices';
+import { useConfirmDeleteDialog } from '@/hooks/useConfirmDeleteDialog';
 
 interface RealizationsListProps {
   onEdit: (realization: Realization) => void;
@@ -15,18 +17,26 @@ interface RealizationsListProps {
 }
 
 const RealizationsList = ({ onEdit, onAdd, onDelete }: RealizationsListProps) => {
-  const { realizations, deleteRealization } = useRealizations();
+  const { realizations, deleteRealization, toggleRealizationStatus } = useRealizations();
   const { services } = useServices();
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [serviceFilter, setServiceFilter] = useState<string>('all');
+  const { confirmDelete, ConfirmDeleteDialog } = useConfirmDeleteDialog({
+    title: 'Confirmer la suppression',
+    description: 'Êtes-vous sûr de vouloir supprimer la réalisation',
+  });
 
-  // Filtrer les réalisations selon la recherche
+  // Filtrer les réalisations selon la recherche, le statut et le service
   const filteredRealizations = realizations.filter(realization => {
     const service = services.find(s => s.id === realization.serviceId);
     const matchesSearch = realization.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         realization.caption.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         service?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         service?.category.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
+                          realization.caption.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          service?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          service?.category.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || realization.status === statusFilter;
+    const matchesService = serviceFilter === 'all' || realization.serviceId === serviceFilter;
+    return matchesSearch && matchesStatus && matchesService;
   });
 
   // Grouper les réalisations filtrées par service
@@ -62,44 +72,40 @@ const RealizationsList = ({ onEdit, onAdd, onDelete }: RealizationsListProps) =>
           )}
         </div>
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-semibold">{realization.title || 'Sans titre'}</CardTitle>
+          <div className="flex justify-between items-start">
+            <CardTitle className="text-lg font-semibold">{realization.title || 'Sans titre'}</CardTitle>
+            <Badge variant={realization.status === 'active' ? 'default' : 'secondary'}>
+              {realization.status === 'active' ? 'Actif' : 'Désactivé'}
+            </Badge>
+          </div>
           <p className="text-sm text-muted-foreground mt-1">{service?.name || 'Service inconnu'}</p>
         </CardHeader>
         <CardContent className="pt-0">
           <p className="text-sm mb-4">{realization.caption}</p>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => onEdit(realization)} className="flex-1" aria-label={`Modifier la réalisation ${realization.title}`}>
-              <Edit className="h-4 w-4 mr-2" />
-              Modifier
+          <div className="space-y-2">
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => onEdit(realization)} className="flex-1" aria-label={`Modifier la réalisation ${realization.title}`}>
+                <Edit className="h-4 w-4 mr-2" />
+                Modifier
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => toggleRealizationStatus(realization.id)} className="flex-1" aria-label={`${realization.status === 'active' ? 'Désactiver' : 'Activer'} la réalisation ${realization.title}`}>
+                <Power className="h-4 w-4 mr-2" />
+                {realization.status === 'active' ? 'Désactiver' : 'Activer'}
+              </Button>
+            </div>
+            <Button
+              variant="destructive"
+              size="sm"
+              className="w-full"
+              onClick={() => confirmDelete(realization.title || 'Sans titre', () => {
+                deleteRealization(realization.id);
+                onDelete?.(realization.id, realization.title || 'Sans titre');
+              })}
+              aria-label={`Supprimer la réalisation ${realization.title}`}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Supprimer
             </Button>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="outline" size="sm" className="flex-1" aria-label={`Supprimer la réalisation ${realization.title}`}>
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Supprimer
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Êtes-vous sûr de vouloir supprimer la réalisation "{realization.title || 'Sans titre'}" ? Cette action est irréversible.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Annuler</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => {
-                      deleteRealization(realization.id);
-                      onDelete?.(realization.id, realization.title || 'Sans titre');
-                    }}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  >
-                    Supprimer
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
           </div>
         </CardContent>
       </Card>
@@ -113,14 +119,39 @@ const RealizationsList = ({ onEdit, onAdd, onDelete }: RealizationsListProps) =>
           <Plus className="h-4 w-4 mr-2" />
           Ajouter une réalisation
         </Button>
-        <div className="relative w-full sm:w-auto">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Rechercher une réalisation..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 w-full sm:w-64"
-          />
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto max-w-full overflow-x-auto">
+          <div className="relative flex-1 sm:flex-initial">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Rechercher une réalisation..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 w-full sm:w-64"
+            />
+          </div>
+          <Select value={serviceFilter} onValueChange={setServiceFilter}>
+            <SelectTrigger className="w-full sm:w-40">
+              <SelectValue placeholder="Toutes les prestations" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toutes les prestations</SelectItem>
+              {services.map(service => (
+                <SelectItem key={service.id} value={service.id}>
+                  {service.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={statusFilter} onValueChange={(value: 'all' | 'active' | 'inactive') => setStatusFilter(value)}>
+            <SelectTrigger className="w-full sm:w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tous les statuts</SelectItem>
+              <SelectItem value="active">Actif</SelectItem>
+              <SelectItem value="inactive">Désactivé</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -142,6 +173,7 @@ const RealizationsList = ({ onEdit, onAdd, onDelete }: RealizationsListProps) =>
           </div>
         ))
       )}
+      <ConfirmDeleteDialog />
     </div>
   );
 };

@@ -4,7 +4,7 @@ import ServicesList from './ServicesList';
 import PrestationForm from './PrestationForm';
 import { useServices } from '@/hooks/useServices';
 import { useToast } from '@/hooks/use-toast';
-import { useConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import { useConfirmDeleteDialog } from '@/hooks/useConfirmDeleteDialog';
 
 interface PrestationsManagementProps {
   initialAction?: 'add' | null;

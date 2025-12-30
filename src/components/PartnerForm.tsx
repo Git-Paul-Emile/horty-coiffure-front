@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Upload, X } from 'lucide-react';
 
@@ -20,6 +21,7 @@ const PartnerForm = ({ partner, open, onClose, onSave }: PartnerFormProps) => {
     description: '',
     logo: '',
     website: '',
+    status: 'active' as 'active' | 'inactive',
   });
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -35,6 +37,7 @@ const PartnerForm = ({ partner, open, onClose, onSave }: PartnerFormProps) => {
         description: partner.description || '',
         logo: partner.logo || '',
         website: partner.website || '',
+        status: partner.status,
       });
       setImagePreview(partner.logo || '');
     } else {
@@ -43,6 +46,7 @@ const PartnerForm = ({ partner, open, onClose, onSave }: PartnerFormProps) => {
         description: '',
         logo: '',
         website: '',
+        status: 'active',
       });
       setImagePreview('');
     }
@@ -102,7 +106,7 @@ const PartnerForm = ({ partner, open, onClose, onSave }: PartnerFormProps) => {
       <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {partner ? 'Modifier le partenaire' : 'Ajouter un partenaire'}
+            {partner ? 'Modifier la marque' : 'Ajouter une marque'}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -111,7 +115,7 @@ const PartnerForm = ({ partner, open, onClose, onSave }: PartnerFormProps) => {
               <h3 className="text-lg font-semibold text-gray-900">Informations générales</h3>
               <div className="space-y-4 mt-4">
                 <div>
-                  <Label htmlFor="name">Nom du partenaire</Label>
+                  <Label htmlFor="name">Nom de la marque</Label>
                   <Input
                     id="name"
                     value={formData.name}
@@ -132,13 +136,25 @@ const PartnerForm = ({ partner, open, onClose, onSave }: PartnerFormProps) => {
                     rows={3}
                   />
                 </div>
+                <div>
+                  <Label htmlFor="status">Statut</Label>
+                  <Select value={formData.status} onValueChange={(value: 'active' | 'inactive') => handleChange('status', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner le statut" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Actif</SelectItem>
+                      <SelectItem value="inactive">Désactivé</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900">Médias</h3>
               <div className="space-y-4 mt-4">
                 <div>
-                  <Label htmlFor="logo">Logo du partenaire</Label>
+                  <Label htmlFor="logo">Logo de la marque</Label>
                   <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-gray-400 transition-colors"
                     onDrop={handleDrop}
                     onDragOver={(e) => e.preventDefault()}
@@ -184,7 +200,7 @@ const PartnerForm = ({ partner, open, onClose, onSave }: PartnerFormProps) => {
                     id="website"
                     value={formData.website}
                     onChange={(e) => handleChange('website', e.target.value)}
-                    placeholder="Ex: https://www.partenaire.com"
+                    placeholder="Ex: https://www.marque.com"
                   />
                 </div>
               </div>

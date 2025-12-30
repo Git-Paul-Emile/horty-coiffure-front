@@ -13,6 +13,7 @@ export const useRealizations = () => {
         serviceId: '1', // Nattes Simples et Collées
         caption: 'Nattes simples et collées réalisées avec soin pour un look naturel.',
         title: 'Nattes Classiques',
+        status: 'active',
       },
       {
         id: '2',
@@ -20,6 +21,7 @@ export const useRealizations = () => {
         serviceId: '3', // Twists Naturels
         caption: 'Twists naturels pour un style bohème et facile à entretenir.',
         title: 'Twists Bohèmes',
+        status: 'active',
       },
       {
         id: '3',
@@ -27,6 +29,7 @@ export const useRealizations = () => {
         serviceId: '4', // Extensions
         caption: 'Extensions de qualité pour ajouter longueur et volume.',
         title: 'Extensions Volumineuses',
+        status: 'active',
       },
     ];
 
@@ -66,10 +69,18 @@ export const useRealizations = () => {
     saveRealizations(updated);
   };
 
+  const toggleRealizationStatus = (id: string) => {
+    const updated = realizations.map(realization =>
+      realization.id === id ? { ...realization, status: realization.status === 'active' ? 'inactive' : 'active' as 'active' | 'inactive' } : realization
+    );
+    saveRealizations(updated);
+  };
+
   return {
     realizations,
     addRealization,
     updateRealization,
     deleteRealization,
+    toggleRealizationStatus,
   };
 };

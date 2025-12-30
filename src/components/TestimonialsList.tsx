@@ -5,9 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Edit, Trash2, Plus, Search, Star } from 'lucide-react';
 import { useTestimonials } from '@/hooks/useTestimonials';
+import { useConfirmDeleteDialog } from '@/hooks/useConfirmDeleteDialog';
 
 interface TestimonialsListProps {
   onEdit: (testimonial: Testimonial) => void;
@@ -16,9 +16,13 @@ interface TestimonialsListProps {
 }
 
 const TestimonialsList = ({ onEdit, onAdd, onDelete }: TestimonialsListProps) => {
-  const { testimonials, deleteTestimonial } = useTestimonials();
+  const { testimonials, deleteTestimonial, updateTestimonial } = useTestimonials();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
+  const { confirmDelete, ConfirmDeleteDialog } = useConfirmDeleteDialog({
+    title: 'Confirmer la suppression',
+    description: 'Êtes-vous sûr de vouloir supprimer le témoignage de',
+  });
 
   // Filtrer les témoignages selon la recherche et le statut
   const filteredTestimonials = testimonials.filter(testimonial => {
@@ -33,7 +37,7 @@ const TestimonialsList = ({ onEdit, onAdd, onDelete }: TestimonialsListProps) =>
     switch (status) {
       case 'approved': return 'default';
       case 'pending': return 'secondary';
-      case 'rejected': return 'destructive';
+      case 'rejected': return 'outline';
       default: return 'secondary';
     }
   };
@@ -42,8 +46,15 @@ const TestimonialsList = ({ onEdit, onAdd, onDelete }: TestimonialsListProps) =>
     switch (status) {
       case 'approved': return 'Approuvé';
       case 'pending': return 'En attente';
-      case 'rejected': return 'Rejeté';
+      case 'rejected': return 'Archivé';
       default: return status;
+    }
+  };
+
+  const handleStatusChange = (testimonialId: string, newStatus: 'pending' | 'approved' | 'rejected') => {
+    const testimonial = testimonials.find(t => t.id === testimonialId);
+    if (testimonial) {
+      updateTestimonial(testimonialId, { ...testimonial, status: newStatus });
     }
   };
 
@@ -69,39 +80,40 @@ const TestimonialsList = ({ onEdit, onAdd, onDelete }: TestimonialsListProps) =>
         <div className="text-sm mb-4">
           <span className="font-medium">Service:</span> {testimonial.service}
         </div>
+        <div className="mb-4">
+          <label className="text-sm font-medium">Statut:</label>
+          <Select
+            value={testimonial.status}
+            onValueChange={(value: 'pending' | 'approved' | 'rejected') => handleStatusChange(testimonial.id, value)}
+          >
+            <SelectTrigger className="w-full mt-1">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pending">En attente</SelectItem>
+              <SelectItem value="approved">Approuvé</SelectItem>
+              <SelectItem value="rejected">Archivé</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={() => onEdit(testimonial)} className="flex-1" aria-label={`Modifier le témoignage de ${testimonial.name}`}>
             <Edit className="h-4 w-4 mr-2" />
             Modifier
           </Button>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="outline" size="sm" className="flex-1" aria-label={`Supprimer le témoignage de ${testimonial.name}`}>
-                <Trash2 className="h-4 w-4 mr-2" />
-                Supprimer
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Êtes-vous sûr de vouloir supprimer le témoignage de "{testimonial.name}" ? Cette action est irréversible.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Annuler</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => {
-                    deleteTestimonial(testimonial.id);
-                    onDelete?.(testimonial.id, testimonial.name);
-                  }}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                >
-                  Supprimer
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <Button
+            variant="destructive"
+            size="sm"
+            className="flex-1"
+            onClick={() => confirmDelete(testimonial.name, () => {
+              deleteTestimonial(testimonial.id);
+              onDelete?.(testimonial.id, testimonial.name);
+            })}
+            aria-label={`Supprimer le témoignage de ${testimonial.name}`}
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Supprimer
+          </Button>
         </div>
       </CardContent>
     </Card>
@@ -110,11 +122,11 @@ const TestimonialsList = ({ onEdit, onAdd, onDelete }: TestimonialsListProps) =>
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-        <Button onClick={onAdd} aria-label="Ajouter un nouveau témoignage">
+        <Button variant="outline" onClick={onAdd} aria-label="Ajouter un nouveau témoignage">
           <Plus className="h-4 w-4 mr-2" />
           Ajouter un témoignage
         </Button>
-        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto max-w-full overflow-x-auto">
           <div className="relative flex-1 sm:flex-initial">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -153,6 +165,7 @@ const TestimonialsList = ({ onEdit, onAdd, onDelete }: TestimonialsListProps) =>
           </div>
         )}
       </div>
+      <ConfirmDeleteDialog />
     </div>
   );
 };

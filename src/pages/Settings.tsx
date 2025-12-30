@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import AdminLayout from "@/components/AdminLayout";
+import ImageUpload from "@/components/ui/image-upload";
 import { useAdminSettings } from "@/hooks/useAdminSettings";
 import { useAppointments } from "@/hooks/useAppointments";
 
@@ -23,6 +24,9 @@ const Settings = () => {
   const [heroSettings, setHeroSettings] = useState(settings.heroSettings);
   const [appointmentSettingsState, setAppointmentSettingsState] = useState(appointmentSettings);
   const [socialLinks, setSocialLinks] = useState(settings.socialLinks);
+
+  const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
+  const [heroImagePreview, setHeroImagePreview] = useState<string>(settings.heroSettings?.image || '');
 
   const handleSaveOpeningHours = () => {
     updateOpeningHours(openingHours);
@@ -45,7 +49,8 @@ const Settings = () => {
   };
 
   const handleSaveHeroSettings = () => {
-    updateHeroSettings(heroSettings);
+    const imageToSave = heroImagePreview || heroSettings.image || '';
+    updateHeroSettings({ ...heroSettings, image: imageToSave });
     toast.success("Paramètres de la section hero mis à jour !");
   };
 
@@ -54,10 +59,15 @@ const Settings = () => {
     toast.success("Liens des réseaux sociaux mis à jour !");
   };
 
+  const handleHeroImageChange = (file: File | null, preview: string) => {
+    setHeroImageFile(file);
+    setHeroImagePreview(preview);
+  };
+
 
   return (
     <AdminLayout>
-      <div className="flex flex-1 flex-col gap-6 p-6">
+      <div className="flex flex-1 flex-col gap-6 p-6 overflow-x-hidden">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Paramètres</h1>
           <p className="text-muted-foreground">
@@ -66,7 +76,7 @@ const Settings = () => {
         </div>
 
         <Tabs defaultValue="opening-hours" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="flex w-full overflow-x-auto scrollbar-hide">
             <TabsTrigger value="opening-hours">Horaires d'ouverture</TabsTrigger>
             <TabsTrigger value="contact">Coordonnées</TabsTrigger>
             <TabsTrigger value="hero">Section Hero</TabsTrigger>
@@ -76,7 +86,7 @@ const Settings = () => {
           </TabsList>
 
           <TabsContent value="opening-hours" className="space-y-6">
-            <Card>
+             <Card className="w-full max-w-full">
               <CardHeader>
                 <CardTitle>Horaires d'ouverture</CardTitle>
                 <CardDescription>
@@ -85,52 +95,54 @@ const Settings = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 {openingHours.map((hour, index) => (
-                  <div key={index} className="flex items-center gap-4 p-4 border rounded-lg">
-                    <div className="w-32">
+                  <div key={index} className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 p-4 border rounded-lg">
+                    <div className="w-full sm:w-32 flex-shrink-0">
                       <Label className="text-sm font-medium">{hour.day}</Label>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`closed-${index}`}
-                        checked={hour.isClosed}
-                        onCheckedChange={(checked) => {
-                          const updated = [...openingHours];
-                          updated[index] = { ...updated[index], isClosed: checked as boolean };
-                          setOpeningHours(updated);
-                        }}
-                      />
-                      <Label htmlFor={`closed-${index}`} className="text-sm">Fermé</Label>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 flex-1">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`closed-${index}`}
+                          checked={hour.isClosed}
+                          onCheckedChange={(checked) => {
+                            const updated = [...openingHours];
+                            updated[index] = { ...updated[index], isClosed: checked as boolean };
+                            setOpeningHours(updated);
+                          }}
+                        />
+                        <Label htmlFor={`closed-${index}`} className="text-sm">Fermé</Label>
+                      </div>
+                      {!hour.isClosed && (
+                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 flex-1">
+                          <div className="flex items-center gap-2">
+                            <Label className="text-sm flex-shrink-0">Ouverture:</Label>
+                            <Input
+                              type="time"
+                              value={hour.openingTime}
+                              onChange={(e) => {
+                                const updated = [...openingHours];
+                                updated[index] = { ...updated[index], openingTime: e.target.value };
+                                setOpeningHours(updated);
+                              }}
+                              className="w-full sm:w-32"
+                            />
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Label className="text-sm flex-shrink-0">Fermeture:</Label>
+                            <Input
+                              type="time"
+                              value={hour.closingTime}
+                              onChange={(e) => {
+                                const updated = [...openingHours];
+                                updated[index] = { ...updated[index], closingTime: e.target.value };
+                                setOpeningHours(updated);
+                              }}
+                              className="w-full sm:w-32"
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    {!hour.isClosed && (
-                      <>
-                        <div className="flex items-center gap-2">
-                          <Label className="text-sm">Ouverture:</Label>
-                          <Input
-                            type="time"
-                            value={hour.openingTime}
-                            onChange={(e) => {
-                              const updated = [...openingHours];
-                              updated[index] = { ...updated[index], openingTime: e.target.value };
-                              setOpeningHours(updated);
-                            }}
-                            className="w-32"
-                          />
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Label className="text-sm">Fermeture:</Label>
-                          <Input
-                            type="time"
-                            value={hour.closingTime}
-                            onChange={(e) => {
-                              const updated = [...openingHours];
-                              updated[index] = { ...updated[index], closingTime: e.target.value };
-                              setOpeningHours(updated);
-                            }}
-                            className="w-32"
-                          />
-                        </div>
-                      </>
-                    )}
                   </div>
                 ))}
                 <Separator />
@@ -142,7 +154,7 @@ const Settings = () => {
           </TabsContent>
 
           <TabsContent value="contact" className="space-y-6">
-            <Card>
+             <Card className="w-full max-w-full">
               <CardHeader>
                 <CardTitle>Coordonnées</CardTitle>
                 <CardDescription>
@@ -187,7 +199,7 @@ const Settings = () => {
           </TabsContent>
 
           <TabsContent value="hero" className="space-y-6">
-            <Card>
+             <Card className="w-full max-w-full">
               <CardHeader>
                 <CardTitle>Section Hero</CardTitle>
                 <CardDescription>
@@ -223,38 +235,14 @@ const Settings = () => {
                     rows={3}
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="clients-count">Nombre de clients</Label>
-                    <Input
-                      id="clients-count"
-                      type="number"
-                      value={heroSettings.clientsCount}
-                      onChange={(e) => setHeroSettings({ ...heroSettings, clientsCount: parseInt(e.target.value) || 0 })}
-                      placeholder="500"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="rating">Note</Label>
-                    <Input
-                      id="rating"
-                      type="number"
-                      step="0.1"
-                      value={heroSettings.rating}
-                      onChange={(e) => setHeroSettings({ ...heroSettings, rating: parseFloat(e.target.value) || 0 })}
-                      placeholder="4.9"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="hero-image">Image (URL)</Label>
-                  <Input
-                    id="hero-image"
-                    value={heroSettings.image || ""}
-                    onChange={(e) => setHeroSettings({ ...heroSettings, image: e.target.value })}
-                    placeholder="/hero-image.jpg"
-                  />
-                </div>
+                <ImageUpload
+                  id="hero-image"
+                  label="Image de la section hero"
+                  value={heroImagePreview}
+                  onChange={handleHeroImageChange}
+                  maxSize={5}
+                  placeholder="Télécharger une image ou glisser-déposer"
+                />
                 <Separator />
                 <Button onClick={handleSaveHeroSettings}>
                   Sauvegarder la section hero
@@ -264,7 +252,7 @@ const Settings = () => {
           </TabsContent>
 
           <TabsContent value="social" className="space-y-6">
-            <Card>
+             <Card className="w-full max-w-full">
               <CardHeader>
                 <CardTitle>Réseaux sociaux</CardTitle>
                 <CardDescription>
@@ -299,7 +287,7 @@ const Settings = () => {
           </TabsContent>
 
           <TabsContent value="appointments" className="space-y-6">
-            <Card>
+             <Card className="w-full max-w-full">
               <CardHeader>
                 <CardTitle>Paramètres de rendez-vous</CardTitle>
                 <CardDescription>
@@ -342,7 +330,7 @@ const Settings = () => {
           </TabsContent>
 
           <TabsContent value="admin" className="space-y-6">
-            <Card>
+             <Card className="w-full max-w-full">
               <CardHeader>
                 <CardTitle>Identifiant Admin</CardTitle>
                 <CardDescription>
