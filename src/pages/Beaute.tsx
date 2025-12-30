@@ -18,19 +18,19 @@ declare global {
   }
 }
 
-const Coiffure = () => {
+const Beaute = () => {
   const { services } = useServices();
   const { categories } = useCategories();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  // Get subcategories for coiffure
-  const coiffureSubcategories = categories.filter(cat => cat.parentId === 'coiffure');
+  // Get subcategories for beauty
+  const beautySubcategories = categories.filter(cat => cat.parentId === 'beaute');
 
-  // Filter services for coiffure and apply filters
+  // Filter services for beauty and apply filters
   const filteredServices = useMemo(() => {
     let filtered = services.filter(service =>
-      coiffureSubcategories.some(sub => sub.id === service.category)
+      beautySubcategories.some(sub => sub.id === service.category)
     );
 
     if (selectedCategory !== "all") {
@@ -45,7 +45,7 @@ const Coiffure = () => {
     }
 
     return filtered;
-  }, [services, coiffureSubcategories, selectedCategory, searchTerm]);
+  }, [services, beautySubcategories, selectedCategory, searchTerm]);
 
   // Group services by category
   const groupedServices = useMemo(() => {
@@ -69,13 +69,13 @@ const Coiffure = () => {
           {/* Section Header */}
           <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
             <span className="inline-block text-primary font-medium text-sm uppercase tracking-wider mb-4">
-              Nos Services de Coiffure
+              Nos Services de Beauté
             </span>
             <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
-              Découvrez Nos Types de Coiffure
+              Découvrez Nos Soins de Beauté
             </h1>
             <p className="text-lg text-muted-foreground">
-              Explorez notre gamme complète de services de coiffure africaine et européenne, chacun réalisé avec expertise et passion.
+              Explorez notre gamme de soins beauté pour sublimer votre apparence et prendre soin de vous.
             </p>
           </div>
 
@@ -99,7 +99,7 @@ const Coiffure = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Toutes les catégories</SelectItem>
-                  {coiffureSubcategories.map((sub) => (
+                  {beautySubcategories.map((sub) => (
                     <SelectItem key={sub.id} value={sub.id}>
                       {sub.name}
                     </SelectItem>
@@ -188,4 +188,4 @@ const Coiffure = () => {
   );
 };
 
-export default Coiffure;
+export default Beaute;

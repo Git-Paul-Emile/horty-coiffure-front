@@ -1,49 +1,28 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import galleryBraids from "@/assets/gallery-braids.jpg";
-import galleryTwists from "@/assets/gallery-twists.jpg";
-import galleryExtensions from "@/assets/gallery-extensions.jpg";
-import heroImage from "@/assets/hero-image.jpg";
-import pedicure from "@/assets/pedicure.jpg";
-
-const categories = ["Toutes", "Nattes", "Tresses", "Twists", "Extensions", "Pédicure"];
-
-const galleryImages = [
-  {
-    src: galleryBraids,
-    alt: "Nattes africaines traditionnelles",
-    category: "Nattes",
-  },
-  {
-    src: galleryTwists,
-    alt: "Twists élégants",
-    category: "Twists",
-  },
-  {
-    src: galleryExtensions,
-    alt: "Extensions tressées",
-    category: "Extensions",
-  },
-  {
-    src: heroImage,
-    alt: "Coiffure sophistiquée",
-    category: "Tresses",
-  },
-  {
-    src: pedicure,
-    alt: "Pédicure et manucure professionnelle",
-    category: "Pédicure",
-  },
-];
+import { useRealizations } from "@/hooks/useRealizations";
+import { useServices } from "@/hooks/useServices";
 
 const GallerySection = () => {
+  const { realizations } = useRealizations();
+  const { services } = useServices();
   const [activeCategory, setActiveCategory] = useState("Toutes");
 
-  const filteredImages =
-    activeCategory === "Toutes"
-      ? galleryImages
-      : galleryImages.filter((img) => img.category === activeCategory);
+  // Create categories from service names that have realizations
+  const categoriesWithRealizations = services.filter(service =>
+    realizations.some(realization => realization.serviceId === service.id)
+  ).map(service => service.name);
+
+  const categories = ["Toutes", ...categoriesWithRealizations];
+
+  // Filter realizations based on selected service
+  const filteredRealizations = activeCategory === "Toutes"
+    ? realizations
+    : realizations.filter(realization => {
+        const service = services.find(s => s.id === realization.serviceId);
+        return service && service.name === activeCategory;
+      });
 
   return (
     <section id="realisations" className="py-24 bg-background">
@@ -63,45 +42,64 @@ const GallerySection = () => {
         </div>
 
         {/* Category Filter */}
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
-          {categories.map((category) => (
-            <Button
-              key={category}
-              variant={activeCategory === category ? "default" : "soft"}
-              size="sm"
-              onClick={() => setActiveCategory(category)}
-              className="transition-all duration-300"
-            >
-              {category}
-            </Button>
-          ))}
+        <div className="flex justify-center mb-12">
+          <div className="flex gap-3 overflow-x-auto max-w-2xl scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            <div className="flex gap-3 min-w-max">
+              {categories.map((category) => (
+                <Button
+                  key={category}
+                  variant={activeCategory === category ? "default" : "soft"}
+                  size="sm"
+                  onClick={() => setActiveCategory(category)}
+                  className="transition-all duration-300 whitespace-nowrap"
+                >
+                  {category}
+                </Button>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Gallery Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-6xl mx-auto">
-          {filteredImages.map((image, index) => (
-            <div
-              key={index}
-              className={`relative group overflow-hidden rounded-2xl ${
-                index === 0 ? "md:col-span-2 md:row-span-2" : ""
-              } animate-scale-in`}
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <img
-                src={image.src}
-                alt={image.alt}
-                className={`w-full object-cover transition-transform duration-700 group-hover:scale-110 ${
-                  index === 0 ? "h-full min-h-[400px]" : "h-48 md:h-64"
-                }`}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
-                <span className="inline-block bg-primary/90 text-primary-foreground text-xs font-medium px-3 py-1 rounded-full">
-                  {image.category}
-                </span>
+          {filteredRealizations.map((realization, index) => {
+            const service = services.find(s => s.id === realization.serviceId);
+            return (
+              <div
+                key={realization.id}
+                className={`relative group overflow-hidden rounded-2xl ${
+                  index === 0 ? "md:col-span-2 md:row-span-2" : ""
+                } animate-scale-in`}
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <img
+                  src={realization.image}
+                  alt={realization.caption}
+                  className={`w-full object-cover transition-transform duration-700 group-hover:scale-110 ${
+                    index === 0 ? "h-full min-h-[400px]" : "h-48 md:h-64"
+                  }`}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                  <div className="space-y-2">
+                    {realization.title && (
+                      <h3 className="text-primary-foreground font-semibold text-sm">
+                        {realization.title}
+                      </h3>
+                    )}
+                    <p className="text-primary-foreground/90 text-xs">
+                      {realization.caption}
+                    </p>
+                    {service && (
+                      <span className="inline-block bg-primary/90 text-primary-foreground text-xs font-medium px-3 py-1 rounded-full">
+                        {service.name}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* CTA */}

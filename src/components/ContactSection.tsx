@@ -81,10 +81,11 @@ const ContactSection = () => {
             Contact
           </span>
           <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
-            Prenez rendez-vous
+            Contactez-nous
           </h2>
           <p className="text-lg text-muted-foreground">
-            Contactez-nous pour réserver votre créneau ou pour toute question.
+            Besoin de plus d'informations sur nos
+            services ? N'hésitez pas à nous contacter.
           </p>
         </div>
 

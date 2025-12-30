@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Product } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -6,13 +7,27 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search } from 'lucide-react';
 import { useProducts } from '@/hooks/useProducts';
+import { slugify } from '@/lib/utils';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 const PublicProducts = () => {
+  const location = useLocation();
   const { products } = useProducts();
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<'all' | string>('all');
+
+  useEffect(() => {
+    if (location.hash && products.length > 0) {
+      // Small delay to ensure DOM is fully rendered
+      setTimeout(() => {
+        const element = document.getElementById(location.hash.substring(1));
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    }
+  }, [location, products]);
 
   // Filtrer seulement les produits actifs
   const activeProducts = products.filter(product => product.status === 'active');
@@ -40,7 +55,7 @@ const PublicProducts = () => {
   const categories = Array.from(new Set(activeProducts.map(p => p.category || 'Autres')));
 
   const renderProductCard = (product: Product) => (
-    <Card key={product.id} className="group transition-all duration-300 hover:shadow-xl hover:scale-[1.03] overflow-hidden border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+    <Card key={product.id} id={slugify(product.name)} className="group transition-all duration-300 hover:shadow-xl hover:scale-[1.03] overflow-hidden border-0 bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
       {/* Image */}
       <div className="relative h-56 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700">
         {product.image ? (
@@ -141,7 +156,7 @@ const PublicProducts = () => {
             </Card>
           ) : (
             Object.entries(groupedProducts).map(([category, categoryProducts]) => (
-              <div key={category} className="mb-16">
+              <div key={category} id={slugify(category)} className="mb-16">
                 <h2 className="font-display text-2xl font-bold text-foreground mb-8 text-center">
                   {category}
                 </h2>

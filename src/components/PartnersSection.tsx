@@ -45,14 +45,14 @@ const PartnersSection = () => {
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
           <span className="inline-block text-primary font-medium text-sm uppercase tracking-wider mb-4">
-            Nos Partenaires
+            Nos Marques
           </span>
           <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
             Les marques que nous recommandons
           </h2>
           <p className="text-lg text-muted-foreground">
-            Découvrez les marques partenaires de qualité que nous utilisons et recommandons
-            pour vos soins capillaires et de beauté.
+            Découvrez les marques de qualité que nous utilisons et recommandons
+            pour vos soins.
           </p>
         </div>
 

@@ -82,6 +82,9 @@ const Header = () => {
                       <DropdownMenuItem asChild>
                         <Link to="/pedicure">Pédicure et Manucure</Link>
                       </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/beaute">Beauté</Link>
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 );
@@ -192,6 +195,13 @@ const Header = () => {
                           className="block text-foreground/80 hover:text-primary transition-colors py-2"
                         >
                           Pédicure et Manucure
+                        </Link>
+                        <Link
+                          to="/beaute"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block text-foreground/80 hover:text-primary transition-colors py-2"
+                        >
+                          Beauté
                         </Link>
                       </div>
                     )}

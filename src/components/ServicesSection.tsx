@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Scissors, Hand, ArrowRight, Check } from "lucide-react";
+import { Scissors, Hand, ArrowRight, Check, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 import galleryBraids from "@/assets/gallery-braids.jpg";
 import pedicure from "@/assets/pedicure.jpg";
-import { useServices } from "@/hooks/useServices";
-import { Service } from "@/lib/types";
+import { useCategories } from "@/hooks/useCategories";
+import { Category } from "@/lib/types";
 
 const categoryConfig = {
   africaine: {
@@ -61,23 +61,16 @@ const categoryConfig = {
 };
 
 const ServicesSection = () => {
-  const { services } = useServices();
+  const { categories } = useCategories();
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [maxHeight, setMaxHeight] = useState(0);
 
-  // Grouper les services par catégorie et créer les objets de service
-  const groupedServices = Object.keys(categoryConfig).map(categoryKey => {
-    const config = categoryConfig[categoryKey as keyof typeof categoryConfig];
-    const categoryServices = services.filter(service => service.category === categoryKey && service.status === 'active');
-    const features = categoryServices.map(service => service.name);
-
-    return {
-      ...config,
-      features
-    };
-  }).filter(service => service.features.length > 0); // Ne montrer que les catégories avec des services actifs
+  // Obtenir les catégories principales actives
+  const mainCategories = categories.filter(category => !category.parentId && category.status === 'active');
 
   useEffect(() => {
     if (!api) {
@@ -100,6 +93,14 @@ const ServicesSection = () => {
     return () => clearInterval(interval);
   }, [api, isPlaying]);
 
+  useEffect(() => {
+    if (cardRefs.current.length > 0) {
+      const heights = cardRefs.current.map(ref => ref?.getBoundingClientRect().height || 0);
+      const max = Math.max(...heights);
+      setMaxHeight(max);
+    }
+  }, [mainCategories]);
+
   return (
     <section id="services" className="py-24 bg-muted/30">
       <div className="container mx-auto px-4">
@@ -117,9 +118,9 @@ const ServicesSection = () => {
           </p>
         </div>
 
-        {/* Services Carousel for small screens */}
+        {/* Services Carousel */}
         <div
-          className="md:hidden"
+          className="max-w-5xl mx-auto"
           onMouseEnter={() => setIsPlaying(false)}
           onMouseLeave={() => setIsPlaying(true)}
         >
@@ -129,30 +130,38 @@ const ServicesSection = () => {
               loop: true,
             }}
             setApi={setApi}
-            className="max-w-6xl mx-auto"
+            className="w-full"
           >
-            <CarouselContent>
-              {groupedServices.map((service, index) => (
-                <CarouselItem key={service.id}>
+            <CarouselContent className="-ml-2 md:-ml-4">
+              {mainCategories.map((category, index) => (
+                <CarouselItem key={category.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
                   <Card
                     variant="elevated"
                     className={`overflow-hidden group animate-fade-in-up animation-delay-${(index + 1) * 100}`}
+                    ref={(el) => cardRefs.current[index] = el}
+                    style={maxHeight > 0 ? { height: `${maxHeight}px` } : {}}
                   >
                     {/* Image */}
                     <div className="relative h-64 overflow-hidden">
                       <img
-                        src={service.image}
-                        alt={service.title}
+                        src={category.image}
+                        alt={category.name}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
                       <div className="absolute bottom-4 left-4 right-4">
                         <div className="flex items-center gap-3">
                           <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center shadow-soft">
-                            <service.icon size={24} className="text-primary-foreground" />
-                          </div>
+                          {category.name.toLowerCase().includes('coiffure') ? (
+                            <Scissors size={24} className="text-primary-foreground" />
+                          ) : category.name.toLowerCase().includes('beauté') || category.name.toLowerCase().includes('regard') ? (
+                            <Sparkles size={24} className="text-primary-foreground" />
+                          ) : (
+                            <Hand size={24} className="text-primary-foreground" />
+                          )}
+                        </div>
                           <h3 className="font-display text-2xl font-bold text-foreground">
-                            {service.title}
+                            {category.name}
                           </h3>
                         </div>
                       </div>
@@ -160,15 +169,15 @@ const ServicesSection = () => {
 
                     <CardContent className="p-6 space-y-6">
                       <p className="text-muted-foreground leading-relaxed">
-                        {service.description}
+                        {category.description}
                       </p>
 
-                      {/* Features */}
+                      {/* Features - lister les sous-catégories */}
                       <ul className="space-y-3">
-                        {service.features.map((feature, i) => (
+                        {categories.filter(sub => sub.parentId === category.id && sub.status === 'active').map((sub, i) => (
                           <li key={i} className="flex items-center gap-3 text-sm">
                             <Check size={16} className="text-primary flex-shrink-0" />
-                            <span className="text-foreground">{feature}</span>
+                            <span className="text-foreground">{sub.name}</span>
                           </li>
                         ))}
                       </ul>
@@ -184,8 +193,28 @@ const ServicesSection = () => {
                       </div>
 
                       {/* CTA */}
-                      {service.link.startsWith("/") ? (
-                        <Link to={service.link}>
+                      {category.id === 'coiffure' ? (
+                        <Link to="/coiffure">
+                          <Button variant="soft" className="w-full group/btn">
+                            En savoir plus
+                            <ArrowRight
+                              size={16}
+                              className="transition-transform group-hover/btn:translate-x-1"
+                            />
+                          </Button>
+                        </Link>
+                      ) : category.id === 'pedicure-manucure' ? (
+                        <Link to="/pedicure">
+                          <Button variant="soft" className="w-full group/btn">
+                            En savoir plus
+                            <ArrowRight
+                              size={16}
+                              className="transition-transform group-hover/btn:translate-x-1"
+                            />
+                          </Button>
+                        </Link>
+                      ) : category.id === 'beaute' ? (
+                        <Link to="/beaute">
                           <Button variant="soft" className="w-full group/btn">
                             En savoir plus
                             <ArrowRight
@@ -195,10 +224,9 @@ const ServicesSection = () => {
                           </Button>
                         </Link>
                       ) : (
-                        <a href={service.link}>
+                        <a href="#contact">
                           <Button variant="soft" className="w-full group/btn">
-                            Réserver ce service
-                            <ArrowRight
+                          En savoir plus                           <ArrowRight
                               size={16}
                               className="transition-transform group-hover/btn:translate-x-1"
                             />
@@ -226,88 +254,6 @@ const ServicesSection = () => {
               ))}
             </div>
           )}
-        </div>
-
-        {/* Services Grid for medium+ screens */}
-        <div className="hidden md:block">
-          <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            {groupedServices.map((service, index) => (
-              <Card
-                key={service.id}
-                variant="elevated"
-                className={`overflow-hidden group animate-fade-in-up animation-delay-${(index + 1) * 100}`}
-              >
-                {/* Image */}
-                <div className="relative h-64 overflow-hidden">
-                  <img
-                    src={service.image}
-                    alt={service.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center shadow-soft">
-                        <service.icon size={24} className="text-primary-foreground" />
-                      </div>
-                      <h3 className="font-display text-2xl font-bold text-foreground">
-                        {service.title}
-                      </h3>
-                    </div>
-                  </div>
-                </div>
-
-                <CardContent className="p-6 space-y-6">
-                  <p className="text-muted-foreground leading-relaxed">
-                    {service.description}
-                  </p>
-
-                  {/* Features */}
-                  <ul className="space-y-3">
-                    {service.features.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-3 text-sm">
-                        <Check size={16} className="text-primary flex-shrink-0" />
-                        <span className="text-foreground">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* Duration & Price */}
-                  <div className="flex items-center justify-between pt-4 border-t border-border">
-                    <div className="flex items-center gap-2 text-muted-foreground text-sm">
-
-                    </div>
-                    <span className="font-display text-xl font-bold text-primary">
-
-                    </span>
-                  </div>
-
-                  {/* CTA */}
-                  {service.link.startsWith("/") ? (
-                    <Link to={service.link}>
-                      <Button variant="soft" className="w-full group/btn">
-                        En savoir plus
-                        <ArrowRight
-                          size={16}
-                          className="transition-transform group-hover/btn:translate-x-1"
-                        />
-                      </Button>
-                    </Link>
-                  ) : (
-                    <a href={service.link}>
-                      <Button variant="soft" className="w-full group/btn">
-                        Réserver ce service
-                        <ArrowRight
-                          size={16}
-                          className="transition-transform group-hover/btn:translate-x-1"
-                        />
-                      </Button>
-                    </a>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
         </div>
       </div>
     </section>
