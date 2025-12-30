@@ -1,18 +1,19 @@
 import { useState, useRef, useEffect } from 'react';
-import { Upload, X } from 'lucide-react';
+import { Upload, X, Loader2 } from 'lucide-react';
 import { Label } from './label';
 
 interface ImageUploadProps {
   id: string;
   label: string;
   value?: string;
-  onChange: (file: File | null, preview: string) => void;
+  onChange: (url: string | null, preview: string) => void;
   onError?: (error: string) => void;
   error?: string;
   maxSize?: number; // in MB
   acceptedTypes?: string[];
   placeholder?: string;
   required?: boolean;
+  folder?: string; // Cloudinary folder
 }
 
 const ImageUpload = ({
@@ -26,9 +27,11 @@ const ImageUpload = ({
   acceptedTypes = ['image/jpeg', 'image/png', 'image/gif'],
   placeholder = 'Télécharger un fichier ou glisser-déposer',
   required = false,
+  folder = 'default',
 }: ImageUploadProps) => {
   const [imagePreview, setImagePreview] = useState<string>(value);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Update preview when value prop changes
@@ -36,7 +39,25 @@ const ImageUpload = ({
     setImagePreview(value);
   }, [value]);
 
-  const handleFileChange = (file: File | null) => {
+  const uploadToCloudinary = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('folder', folder);
+
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Erreur lors de l\'upload');
+    }
+
+    const data = await response.json();
+    return data.url;
+  };
+
+  const handleFileChange = async (file: File | null) => {
     if (file) {
       // Validation
       if (file.size > maxSize * 1024 * 1024) {
@@ -51,13 +72,28 @@ const ImageUpload = ({
       }
 
       setSelectedFile(file);
-      const reader = new FileReader();
-      reader.onload = () => {
-        const preview = reader.result as string;
-        setImagePreview(preview);
-        onChange(file, preview);
-      };
-      reader.readAsDataURL(file);
+      setIsUploading(true);
+
+      try {
+        // Create preview
+        const reader = new FileReader();
+        reader.onload = () => {
+          const preview = reader.result as string;
+          setImagePreview(preview);
+        };
+        reader.readAsDataURL(file);
+
+        // Upload to Cloudinary
+        const url = await uploadToCloudinary(file);
+        onChange(url, url); // Use URL as both value and preview
+      } catch (error) {
+        const errorMsg = 'Erreur lors de l\'upload de l\'image';
+        onError?.(errorMsg);
+        setSelectedFile(null);
+        setImagePreview('');
+      } finally {
+        setIsUploading(false);
+      }
     } else {
       setSelectedFile(null);
       setImagePreview('');
@@ -104,7 +140,12 @@ const ImageUpload = ({
         onClick={handleClick}
       >
         <div className="space-y-1 text-center">
-          {imagePreview ? (
+          {isUploading ? (
+            <div className="flex flex-col items-center">
+              <Loader2 className="mx-auto h-12 w-12 text-gray-400 animate-spin" />
+              <p className="text-sm text-gray-600">Upload en cours...</p>
+            </div>
+          ) : imagePreview ? (
             <div className="relative">
               <img
                 src={imagePreview}
