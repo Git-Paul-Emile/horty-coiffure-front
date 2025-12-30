@@ -1,7 +1,7 @@
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger, SidebarGroup, SidebarGroupLabel, SidebarMenuSub, SidebarMenuSubItem, SidebarMenuSubButton } from "@/components/ui/sidebar";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogOut, Home, Scissors, Users, Settings, Image, Package, MessageSquare, Tag, Newspaper, Sparkles, ChevronDown } from "lucide-react";
+import { LogOut, Home, Scissors, Users, Settings, Image, Package, MessageSquare, Tag, Newspaper, Sparkles, ChevronDown, Star } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState } from "react";
 
@@ -131,6 +131,19 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                   <Link to="/admin/testimonials">
                     <MessageSquare className="h-4 w-4" />
                     Témoignages
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  className={`hover:bg-primary/10 hover:text-primary ${
+                    isActive("/admin/feedbacks") ? "bg-primary/10 text-primary" : ""
+                  }`}
+                >
+                  <Link to="/admin/feedbacks">
+                    <Star className="h-4 w-4" />
+                    Feedbacks
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

@@ -9,6 +9,8 @@ import Coiffure from "./pages/Coiffure";
 import Pedicure from "./pages/Pedicure";
 import Beaute from "./pages/Beaute";
 import PublicProducts from "@/pages/PublicProducts";
+import Actualites from "./pages/Actualites";
+import Feedback from "./pages/Feedback";
 import AdminLogin from "./pages/AdminLogin";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
@@ -21,6 +23,7 @@ import Appointments from "./pages/Appointments";
 import Testimonials from "./pages/Testimonials";
 import Categories from "./pages/Categories";
 import News from "./pages/News";
+import Feedbacks from "./pages/Feedbacks";
 import NotFound from "./pages/NotFound";
 import ScrollUp from "./components/ScrollUp";
 import FloatingAppointmentButton from "./components/FloatingAppointmentButton";
@@ -45,6 +48,8 @@ const AppContent = () => {
         <Route path="/coiffure" element={<Coiffure />} />
         <Route path="/pedicure" element={<Pedicure />} />
         <Route path="/beaute" element={<Beaute />} />
+        <Route path="/actualites" element={<Actualites />} />
+        <Route path="/feedback" element={<Feedback />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<Dashboard />} />
         <Route path="/admin/settings" element={<Settings />} />
@@ -57,6 +62,7 @@ const AppContent = () => {
         <Route path="/admin/testimonials" element={<Testimonials />} />
         <Route path="/admin/categories" element={<Categories />} />
         <Route path="/admin/news" element={<News />} />
+        <Route path="/admin/feedbacks" element={<Feedbacks />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>

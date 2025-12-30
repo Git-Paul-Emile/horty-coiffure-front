@@ -66,6 +66,23 @@ export interface News {
   status: 'draft' | 'published';
 }
 
+export interface UsefulInfo {
+  id: string;
+  title: string;
+  content: string;
+  image?: string;
+  publishedAt: string;
+  status: 'draft' | 'published';
+}
+
+export interface Feedback {
+  id: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  status: 'unread' | 'read';
+}
+
 export interface AppointmentSettings {
   calendlyUrl: string;
   urgencyMode: boolean;
@@ -99,9 +116,15 @@ export interface HeroSettings {
   image?: string;
 }
 
+export interface SocialLinks {
+  instagram: string;
+  facebook: string;
+}
+
 export interface AdminSettings {
   openingHours: OpeningHour[];
   contactInfo: ContactInfo;
   adminCredentials: AdminCredentials;
   heroSettings: HeroSettings;
+  socialLinks: SocialLinks;
 }

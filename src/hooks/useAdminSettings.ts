@@ -28,6 +28,10 @@ const defaultSettings: AdminSettings = {
     rating: 4.9,
     image: "/hero-image.jpg",
   },
+  socialLinks: {
+    instagram: "https://www.instagram.com/hortycoiffure/",
+    facebook: "https://www.facebook.com/profile.php?id=100064151135256",
+  },
 };
 
 export const useAdminSettings = () => {
@@ -64,6 +68,10 @@ export const useAdminSettings = () => {
     updateSettings({ heroSettings: { ...settings.heroSettings, ...heroSettings } });
   };
 
+  const updateSocialLinks = (socialLinks: Partial<AdminSettings['socialLinks']>) => {
+    updateSettings({ socialLinks: { ...settings.socialLinks, ...socialLinks } });
+  };
+
   return {
     settings,
     updateSettings,
@@ -71,5 +79,6 @@ export const useAdminSettings = () => {
     updateContactInfo,
     updateAdminCredentials,
     updateHeroSettings,
+    updateSocialLinks,
   };
 };

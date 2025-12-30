@@ -13,8 +13,10 @@ const navLinks = [
   { href: "#accueil", label: "Accueil" },
   { href: "#services", label: "Services" },
   { href: "/produits", label: "Produits" },
+  { href: "/actualites", label: "Actualités" },
   { href: "#realisations", label: "Réalisations" },
   { href: "#fidelite", label: "Fidélité" },
+  { href: "/feedback", label: "Feedback", highlight: true },
   { href: "#contact", label: "Contact" },
 ];
 
@@ -88,15 +90,22 @@ const Header = () => {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 );
-              } else if (link.label === "Produits") {
+              } else if (link.label === "Produits" || link.label === "Actualités" || link.label === "Feedback") {
+                const isHighlighted = 'highlight' in link && link.highlight;
                 return (
                   <Link
                     key={link.href}
                     to={link.href}
-                    className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors duration-300 relative group"
+                    className={`text-sm font-medium transition-colors duration-300 relative group ${
+                      isHighlighted
+                        ? "text-primary hover:text-primary/80 bg-primary/10 px-3 py-1 rounded-full"
+                        : "text-foreground/80 hover:text-primary"
+                    }`}
                   >
                     {link.label}
-                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+                    {!isHighlighted && (
+                      <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+                    )}
                   </Link>
                 );
               } else {
@@ -207,13 +216,18 @@ const Header = () => {
                     )}
                   </div>
                 );
-              } else if (link.label === "Produits") {
+              } else if (link.label === "Produits" || link.label === "Actualités" || link.label === "Feedback") {
+                const isHighlighted = 'highlight' in link && link.highlight;
                 return (
                   <Link
                     key={link.href}
                     to={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="block text-foreground/80 hover:text-primary transition-colors py-2"
+                    className={`block transition-colors py-2 ${
+                      isHighlighted
+                        ? "text-primary hover:text-primary/80 bg-primary/10 px-3 rounded-full font-medium"
+                        : "text-foreground/80 hover:text-primary"
+                    }`}
                   >
                     {link.label}
                   </Link>

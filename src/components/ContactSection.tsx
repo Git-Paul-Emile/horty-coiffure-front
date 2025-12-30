@@ -276,7 +276,7 @@ const ContactSection = () => {
                 </h3>
                 <div className="flex gap-4">
                   <a
-                    href="https://www.instagram.com/hortycoiffure/"
+                    href={settings.socialLinks?.instagram || "https://www.instagram.com/hortycoiffure/"}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 p-4 rounded-xl bg-primary/5 hover:bg-primary/10 transition-colors flex-1"
@@ -290,7 +290,7 @@ const ContactSection = () => {
                     </div>
                   </a>
                   <a
-                    href="https://www.facebook.com/profile.php?id=100064151135256"
+                    href={settings.socialLinks?.facebook || "https://www.facebook.com/profile.php?id=100064151135256"}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 p-4 rounded-xl bg-primary/5 hover:bg-primary/10 transition-colors flex-1"

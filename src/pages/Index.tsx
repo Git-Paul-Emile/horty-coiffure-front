@@ -10,6 +10,7 @@ import TestimonialsSection from "@/components/TestimonialsSection";
 import LoyaltySection from "@/components/LoyaltySection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import EdgeTab from "@/components/EdgeTab";
 
 const Index = () => {
   const location = useLocation();
@@ -26,6 +27,7 @@ const Index = () => {
   return (
     <main className="overflow-x-hidden">
       <Header />
+      <EdgeTab />
       <HeroSection />
       <ServicesSection />
       <ProductsSection />

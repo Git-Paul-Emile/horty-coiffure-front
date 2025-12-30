@@ -14,7 +14,7 @@ import { useAdminSettings } from "@/hooks/useAdminSettings";
 import { useAppointments } from "@/hooks/useAppointments";
 
 const Settings = () => {
-  const { settings, updateOpeningHours, updateContactInfo, updateAdminCredentials, updateHeroSettings } = useAdminSettings();
+  const { settings, updateOpeningHours, updateContactInfo, updateAdminCredentials, updateHeroSettings, updateSocialLinks } = useAdminSettings();
   const { settings: appointmentSettings, updateSettings: updateAppointmentSettings } = useAppointments();
 
   const [openingHours, setOpeningHours] = useState(settings.openingHours);
@@ -22,6 +22,7 @@ const Settings = () => {
   const [adminCredentials, setAdminCredentials] = useState(settings.adminCredentials);
   const [heroSettings, setHeroSettings] = useState(settings.heroSettings);
   const [appointmentSettingsState, setAppointmentSettingsState] = useState(appointmentSettings);
+  const [socialLinks, setSocialLinks] = useState(settings.socialLinks);
 
   const handleSaveOpeningHours = () => {
     updateOpeningHours(openingHours);
@@ -48,6 +49,11 @@ const Settings = () => {
     toast.success("Paramètres de la section hero mis à jour !");
   };
 
+  const handleSaveSocialLinks = () => {
+    updateSocialLinks(socialLinks);
+    toast.success("Liens des réseaux sociaux mis à jour !");
+  };
+
 
   return (
     <AdminLayout>
@@ -60,10 +66,11 @@ const Settings = () => {
         </div>
 
         <Tabs defaultValue="opening-hours" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="opening-hours">Horaires d'ouverture</TabsTrigger>
             <TabsTrigger value="contact">Coordonnées</TabsTrigger>
             <TabsTrigger value="hero">Section Hero</TabsTrigger>
+            <TabsTrigger value="social">Réseaux sociaux</TabsTrigger>
             <TabsTrigger value="appointments">Rendez-vous</TabsTrigger>
             <TabsTrigger value="admin">Admin</TabsTrigger>
           </TabsList>
@@ -251,6 +258,41 @@ const Settings = () => {
                 <Separator />
                 <Button onClick={handleSaveHeroSettings}>
                   Sauvegarder la section hero
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="social" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Réseaux sociaux</CardTitle>
+                <CardDescription>
+                  Gérez les liens vers vos profils sociaux
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="instagram">Instagram</Label>
+                  <Input
+                    id="instagram"
+                    value={socialLinks.instagram}
+                    onChange={(e) => setSocialLinks({ ...socialLinks, instagram: e.target.value })}
+                    placeholder="https://www.instagram.com/username"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="facebook">Facebook</Label>
+                  <Input
+                    id="facebook"
+                    value={socialLinks.facebook}
+                    onChange={(e) => setSocialLinks({ ...socialLinks, facebook: e.target.value })}
+                    placeholder="https://www.facebook.com/username"
+                  />
+                </div>
+                <Separator />
+                <Button onClick={handleSaveSocialLinks}>
+                  Sauvegarder les liens sociaux
                 </Button>
               </CardContent>
             </Card>

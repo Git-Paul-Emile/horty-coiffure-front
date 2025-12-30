@@ -3,10 +3,12 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { useRealizations } from "@/hooks/useRealizations";
 import { useServices } from "@/hooks/useServices";
+import { useAdminSettings } from "@/hooks/useAdminSettings";
 
 const GallerySection = () => {
   const { realizations } = useRealizations();
   const { services } = useServices();
+  const { settings } = useAdminSettings();
   const [activeCategory, setActiveCategory] = useState("Toutes");
 
   // Create categories from service names that have realizations
@@ -105,7 +107,7 @@ const GallerySection = () => {
         {/* CTA */}
         <div className="text-center mt-12">
           <a
-            href="https://www.instagram.com/hortycoiffure/"
+            href={settings.socialLinks?.instagram || "https://www.instagram.com/hortycoiffure/"}
             target="_blank"
             rel="noopener noreferrer"
           >

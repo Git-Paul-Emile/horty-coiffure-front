@@ -1,0 +1,116 @@
+import Header from "@/components/Header";
+import ContactSection from "@/components/ContactSection";
+import Footer from "@/components/Footer";
+import { Card, CardContent } from "@/components/ui/card";
+import { useNews } from "@/hooks/useNews";
+import { Calendar } from "lucide-react";
+
+const Actualites = () => {
+  const { news } = useNews();
+
+  // Filter and sort published news by publishedAt descending
+  const publishedNews = news
+    .filter(item => item.status === 'published')
+    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+
+  return (
+    <main className="overflow-x-hidden">
+      <Header />
+
+      <section className="py-24 bg-muted/30">
+        <div className="container mx-auto px-4">
+          {/* Section Header */}
+          <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
+            <span className="inline-block text-primary font-medium text-sm uppercase tracking-wider mb-4">
+              Actualités
+            </span>
+            <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
+              Restez Informés de Nos Nouvelles
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              Découvrez les dernières nouvelles, promotions et événements de Horty Coiffure.
+            </p>
+          </div>
+
+          {/* News Feed */}
+          {publishedNews.length > 0 ? (
+            <div className="max-w-4xl mx-auto space-y-8">
+              {publishedNews.map((item, index) => (
+                <Card
+                  key={item.id}
+                  variant="elevated"
+                  className={`overflow-hidden group animate-fade-in-up animation-delay-${(index + 1) * 100} hover:shadow-xl transition-all duration-500`}
+                >
+                  <CardContent className="p-0">
+                    {/* Image */}
+                    {item.image && (
+                      <div className="relative h-64 md:h-80 overflow-hidden">
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                        <div className="absolute top-4 left-4">
+                          <div className="bg-primary/90 backdrop-blur-sm text-primary-foreground text-xs font-medium px-3 py-1 rounded-full">
+                            Actualité
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="p-6 md:p-8">
+                      {/* Date */}
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm mb-4">
+                        <Calendar size={16} />
+                        {new Date(item.publishedAt).toLocaleDateString('fr-FR', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </div>
+
+                      {/* Title */}
+                      <h3 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-4 group-hover:text-primary transition-colors duration-300">
+                        {item.title}
+                      </h3>
+
+                      {/* Content */}
+                      <p className="text-muted-foreground leading-relaxed text-base md:text-lg mb-6">
+                        {item.content}
+                      </p>
+
+                      {/* Read More */}
+                      <div className="pt-4 border-t border-border">
+                        <button className="text-primary font-medium text-sm hover:text-primary/80 transition-colors duration-300 flex items-center gap-2 group/btn">
+                          Lire la suite
+                          <svg
+                            className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Aucune actualité disponible pour le moment.</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <ContactSection />
+      <Footer />
+    </main>
+  );
+};
+
+export default Actualites;
