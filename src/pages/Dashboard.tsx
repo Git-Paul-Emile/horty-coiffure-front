@@ -1,19 +1,37 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, Package, MessageSquare, Settings } from "lucide-react";
+import { Star, Package, MessageSquare, Settings, Eye } from "lucide-react";
 import AdminLayout from "@/components/AdminLayout";
 import { useServices } from "@/hooks/useServices";
 import { useTestimonials } from "@/hooks/useTestimonials";
 import { useProducts } from "@/hooks/useProducts";
 import { useFeedbacks } from "@/hooks/useFeedbacks";
+import { useEffect, useState } from "react";
 
 const Dashboard = () => {
   const { services } = useServices();
   const { testimonials } = useTestimonials();
   const { products } = useProducts();
   const { feedbacks } = useFeedbacks();
+  const [visitCount, setVisitCount] = useState(0);
 
   const unreadFeedbacks = feedbacks.filter(f => f.status === 'unread').length;
   const recentFeedbacks = feedbacks.filter(f => f.status === 'unread').slice(-3).reverse();
+
+  useEffect(() => {
+    const fetchVisitCount = async () => {
+      try {
+        // Utilisation de CountAPI pour compter les visites
+        const response = await fetch('https://api.countapi.xyz/get/horty-coiffure/visits');
+        const data = await response.json();
+        setVisitCount(data.value);
+      } catch (error) {
+        console.error('Erreur lors de la récupération du nombre de visites:', error);
+        setVisitCount(0);
+      }
+    };
+
+    fetchVisitCount();
+  }, []);
 
   return (
     <AdminLayout>
@@ -26,7 +44,21 @@ const Dashboard = () => {
         </div>
 
         {/* Statistiques */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Visites
+              </CardTitle>
+              <Eye className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{visitCount.toLocaleString()}</div>
+              <p className="text-xs text-muted-foreground">
+                Visiteurs totaux
+              </p>
+            </CardContent>
+          </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">

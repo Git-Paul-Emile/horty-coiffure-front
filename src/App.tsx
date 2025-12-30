@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { Analytics } from "@vercel/analytics/react";
 import Index from "./pages/Index";
 import Coiffure from "./pages/Coiffure";
 import Pedicure from "./pages/Pedicure";
@@ -41,6 +42,18 @@ const AppContent = () => {
     }
   }, [location]);
 
+  useEffect(() => {
+    const hasVisited = localStorage.getItem('horty-visited');
+    if (!hasVisited) {
+      // Incrémenter le compteur de visites
+      fetch('https://api.countapi.xyz/hit/horty-coiffure/visits')
+        .then(() => {
+          localStorage.setItem('horty-visited', 'true');
+        })
+        .catch(error => console.error('Erreur lors de l\'incrémentation des visites:', error));
+    }
+  }, []);
+
   return (
     <>
       <Routes>
@@ -70,6 +83,7 @@ const AppContent = () => {
       </Routes>
       <ScrollUp />
       {!isAdminPage && <FloatingAppointmentButton />}
+      <Analytics />
     </>
   );
 };
