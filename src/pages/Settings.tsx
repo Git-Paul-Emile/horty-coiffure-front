@@ -9,10 +9,10 @@ import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import AdminLayout from "@/components/AdminLayout";
+import AdminLayout from "@/layout/AdminLayout";
 import ImageUpload from "@/components/ui/image-upload";
 import { useAdminSettings } from "@/hooks/useAdminSettings";
-import { useAppointments } from "@/hooks/useAppointments";
+import { useAppointments } from "@/features/appointments/hooks/useAppointments";
 
 const Settings = () => {
   const { settings, updateOpeningHours, updateContactInfo, updateAdminCredentials, updateHeroSettings, updateSocialLinks } = useAdminSettings();
@@ -59,9 +59,9 @@ const Settings = () => {
     toast.success("Liens des réseaux sociaux mis à jour !");
   };
 
-  const handleHeroImageChange = (file: File | null, preview: string) => {
-    setHeroImageFile(file);
-    setHeroImagePreview(preview);
+  const handleHeroImageChange = (url: string | null, preview: string) => {
+    setHeroImageFile(null); // Reset file since we have URL now
+    setHeroImagePreview(url || '');
   };
 
 

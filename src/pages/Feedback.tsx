@@ -1,15 +1,15 @@
-import Header from "@/components/Header";
-import ContactSection from "@/components/ContactSection";
-import Footer from "@/components/Footer";
+import Header from "@/layout/Header";
+import ContactSection from "@/components/shared/ContactSection";
+import Footer from "@/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import StarRating from "@/components/StarRating";
+import StarRating from "@/components/shared/StarRating";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { useFeedbacks } from "@/hooks/useFeedbacks";
+import { useFeedbacks } from "@/features/feedbacks/hooks/useFeedbacks";
 
 const Feedback = () => {
   const [rating, setRating] = useState(0);

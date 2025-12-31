@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router-dom";
-import PrestationsManagement from "@/components/PrestationsManagement";
-import AdminLayout from "@/components/AdminLayout";
+import PrestationsManagement from "@/features/services/components/PrestationsManagement";
+import AdminLayout from "@/layout/AdminLayout";
 
 const Prestations = () => {
   const [searchParams] = useSearchParams();

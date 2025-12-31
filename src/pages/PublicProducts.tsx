@@ -6,11 +6,11 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search } from 'lucide-react';
-import { useProducts } from '@/hooks/useProducts';
-import { useProductCategories } from '@/hooks/useProductCategories';
+import { useProducts } from '@/features/products/hooks/useProducts';
+import { useProductCategories } from '@/features/products/hooks/useProductCategories';
 import { slugify } from '@/lib/utils';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import Header from '@/layout/Header';
+import Footer from '@/layout/Footer';
 
 const PublicProducts = () => {
   const location = useLocation();

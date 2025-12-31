@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router-dom";
-import ProductsManagement from "@/components/ProductsManagement";
-import AdminLayout from "@/components/AdminLayout";
+import ProductsManagement from "@/features/products/components/ProductsManagement";
+import AdminLayout from "@/layout/AdminLayout";
 
 const Products = () => {
   const [searchParams] = useSearchParams();

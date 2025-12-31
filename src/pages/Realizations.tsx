@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router-dom";
-import RealizationsManagement from "@/components/RealizationsManagement";
-import AdminLayout from "@/components/AdminLayout";
+import RealizationsManagement from "@/features/realizations/components/RealizationsManagement";
+import AdminLayout from "@/layout/AdminLayout";
 
 const Realizations = () => {
   const [searchParams] = useSearchParams();

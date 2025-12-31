@@ -1,5 +1,5 @@
-import FeedbacksManagement from "@/components/FeedbacksManagement";
-import AdminLayout from "@/components/AdminLayout";
+import FeedbacksManagement from "@/features/feedbacks/components/FeedbacksManagement";
+import AdminLayout from "@/layout/AdminLayout";
 
 const Feedbacks = () => {
   return (

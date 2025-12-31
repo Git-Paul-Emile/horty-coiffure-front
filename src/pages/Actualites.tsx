@@ -1,8 +1,8 @@
-import Header from "@/components/Header";
-import ContactSection from "@/components/ContactSection";
-import Footer from "@/components/Footer";
+import Header from "@/layout/Header";
+import ContactSection from "@/components/shared/ContactSection";
+import Footer from "@/layout/Footer";
 import { Card, CardContent } from "@/components/ui/card";
-import { useNews } from "@/hooks/useNews";
+import { useNews } from "@/features/news/hooks/useNews";
 import { Calendar } from "lucide-react";
 
 const Actualites = () => {

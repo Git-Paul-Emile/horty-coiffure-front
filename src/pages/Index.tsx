@@ -1,16 +1,16 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import Header from "@/components/Header";
-import HeroSection from "@/components/HeroSection";
-import ServicesSection from "@/components/ServicesSection";
-import ProductsSection from "@/components/ProductsSection";
-import PartnersSection from "@/components/PartnersSection";
-import GallerySection from "@/components/GallerySection";
-import TestimonialsSection from "@/components/TestimonialsSection";
-import LoyaltySection from "@/components/LoyaltySection";
-import ContactSection from "@/components/ContactSection";
-import Footer from "@/components/Footer";
-import EdgeTab from "@/components/EdgeTab";
+import Header from "@/layout/Header";
+import HeroSection from "@/components/shared/HeroSection";
+import ServicesSection from "@/features/services/components/ServicesSection";
+import ProductsSection from "@/features/products/components/ProductsSection";
+import PartnersSection from "@/features/partners/components/PartnersSection";
+import GallerySection from "@/components/shared/GallerySection";
+import TestimonialsSection from "@/features/testimonials/components/TestimonialsSection";
+import LoyaltySection from "@/components/shared/LoyaltySection";
+import ContactSection from "@/components/shared/ContactSection";
+import Footer from "@/layout/Footer";
+import EdgeTab from "@/components/shared/EdgeTab";
 
 const Index = () => {
   const location = useLocation();

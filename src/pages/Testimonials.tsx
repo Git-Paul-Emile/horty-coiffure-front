@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router-dom";
-import TestimonialsManagement from "@/components/TestimonialsManagement";
-import AdminLayout from "@/components/AdminLayout";
+import TestimonialsManagement from "@/features/testimonials/components/TestimonialsManagement";
+import AdminLayout from "@/layout/AdminLayout";
 
 const Testimonials = () => {
   const [searchParams] = useSearchParams();

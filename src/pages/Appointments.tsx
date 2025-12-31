@@ -1,5 +1,5 @@
-import AppointmentsManagement from "@/components/AppointmentsManagement";
-import AdminLayout from "@/components/AdminLayout";
+import AppointmentsManagement from "@/features/appointments/components/AppointmentsManagement";
+import AdminLayout from "@/layout/AdminLayout";
 
 const Appointments = () => {
   return (

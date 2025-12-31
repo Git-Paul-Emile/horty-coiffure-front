@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router-dom";
-import CategoriesManagement from "@/components/CategoriesManagement";
-import AdminLayout from "@/components/AdminLayout";
+import CategoriesManagement from "@/features/categories/components/CategoriesManagement";
+import AdminLayout from "@/layout/AdminLayout";
 
 const Categories = () => {
   const [searchParams] = useSearchParams();

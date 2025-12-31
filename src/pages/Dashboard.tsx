@@ -1,10 +1,10 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star, Package, MessageSquare, Settings, Eye } from "lucide-react";
-import AdminLayout from "@/components/AdminLayout";
-import { useServices } from "@/hooks/useServices";
-import { useTestimonials } from "@/hooks/useTestimonials";
-import { useProducts } from "@/hooks/useProducts";
-import { useFeedbacks } from "@/hooks/useFeedbacks";
+import AdminLayout from "@/layout/AdminLayout";
+import { useServices } from "@/features/services/hooks/useServices";
+import { useTestimonials } from "@/features/testimonials/hooks/useTestimonials";
+import { useProducts } from "@/features/products/hooks/useProducts";
+import { useFeedbacks } from "@/features/feedbacks/hooks/useFeedbacks";
 import { useEffect, useState } from "react";
 
 const Dashboard = () => {

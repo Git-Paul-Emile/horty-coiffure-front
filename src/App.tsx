@@ -12,7 +12,7 @@ import Beaute from "./pages/Beaute";
 import PublicProducts from "@/pages/PublicProducts";
 import Actualites from "./pages/Actualites";
 import Feedback from "./pages/Feedback";
-import AdminLogin from "./pages/AdminLogin";
+import AdminLogin from "./features/auth/components/AdminLogin";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
 import Prestations from "./pages/Prestations";
@@ -27,8 +27,8 @@ import ProductCategories from "./pages/ProductCategories";
 import News from "./pages/News";
 import Feedbacks from "./pages/Feedbacks";
 import NotFound from "./pages/NotFound";
-import ScrollUp from "./components/ScrollUp";
-import FloatingAppointmentButton from "./components/FloatingAppointmentButton";
+import ScrollUp from "./components/shared/ScrollUp";
+import FloatingAppointmentButton from "./components/shared/FloatingAppointmentButton";
 
 const queryClient = new QueryClient();
 

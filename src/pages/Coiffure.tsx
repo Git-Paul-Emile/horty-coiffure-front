@@ -1,12 +1,12 @@
-import Header from "@/components/Header";
-import ContactSection from "@/components/ContactSection";
-import Footer from "@/components/Footer";
+import Header from "@/layout/Header";
+import ContactSection from "@/components/shared/ContactSection";
+import Footer from "@/layout/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowRight, Clock, Check, Search } from "lucide-react";
-import { useServices } from "@/hooks/useServices";
-import { useCategories } from "@/hooks/useCategories";
+import { useServices } from "@/features/services/hooks/useServices";
+import { useCategories } from "@/features/categories/hooks/useCategories";
 import { useState, useMemo } from "react";
 
 declare global {

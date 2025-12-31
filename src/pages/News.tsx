@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router-dom";
-import NewsManagement from "@/components/NewsManagement";
-import AdminLayout from "@/components/AdminLayout";
+import NewsManagement from "@/features/news/components/NewsManagement";
+import AdminLayout from "@/layout/AdminLayout";
 
 const News = () => {
   const [searchParams] = useSearchParams();
